@@ -1,0 +1,1 @@
+export const TOKEN_COOKIE = "GIS_APP_TOKEN";
