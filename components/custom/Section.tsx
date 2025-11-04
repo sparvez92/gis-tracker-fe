@@ -1,13 +1,21 @@
-import { ReactNode } from "react";
+import clsx from 'clsx';
+import { ReactNode } from 'react';
 
 type Props = {
   className?: string;
   children?: ReactNode;
+  showShadow?: boolean;
 };
 
-const Section = ({ className, children }: Props) => {
+const Section = ({ className = '', showShadow, children }: Props) => {
   return (
-    <div className={`bg-white p-4 ${className}`}>
+    <div
+      className={clsx(
+        `bg-white p-4`,
+        className,
+        showShadow && 'shadow-[6px_6px_54px_0px_#0000000D]'
+      )}
+    >
       {children}
     </div>
   );
