@@ -4,7 +4,7 @@ export const DASHBOARD_ROUTE = "/"
 export const ADD_PROJECT = "/projects/add"
 export const PROJECTS_ROUTE = "/projects"
 export const MAP_ROUTE = "/map"
-export const SETTING_ROUTE = "/map"
+export const SETTING_ROUTE = "/settings"
 
 
 export type IRoutes = {

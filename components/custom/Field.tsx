@@ -25,7 +25,7 @@ const Field = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-primary text-lg font-semibold">{label}</FormLabel>
+          <FormLabel className="text-primary text-sm font-medium">{label}</FormLabel>
           <FormControl>
             <Input
               type={type}

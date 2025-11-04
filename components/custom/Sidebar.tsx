@@ -17,15 +17,15 @@ function Sidebar() {
         <a
           href={item.path}
           className={clsx(
-            'mx-auto flex w-full max-w-[210px] items-center gap-4 rounded-[6px] px-6 py-4 text-sm font-semibold text-white transition-all duration-200',
+            'mx-auto flex w-full max-w-[210px] items-center gap-4 rounded-[6px] px-6 py-4 text-sm font-medium text-white transition-all duration-200',
             isActive && 'text-secondary! bg-white'
           )}
         >
           <Image
             src={isActive ? item.darkIcon : item.lightIcon}
             alt={item.name}
-            width={22}
-            height={25}
+            width={19}
+            height={22}
           />
 
           {item.name}

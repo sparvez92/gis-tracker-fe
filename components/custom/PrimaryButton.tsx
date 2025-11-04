@@ -27,7 +27,7 @@ const PrimaryButton = ({
       onClick={onClick}
       disabled={disabled || isLoading}
       className={cn(
-        'w-full h-14 rounded-xl text-white font-bold text-[20px] transition-all flex items-center justify-center gap-2',
+        'w-full h-14 rounded-xl text-white font-bold text-sm transition-all flex items-center justify-center gap-2',
         'bg-secondary hover:bg-secondary/90 cursor-pointer',
         (disabled || isLoading) && 'opacity-80 cursor-not-allowed!',
         className
