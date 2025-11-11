@@ -28,12 +28,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </Sheet>
 
       {/* Sidebar for large screens */}
-      <aside className="bg-secondary hidden min-h-screen w-65 flex-col border-r md:flex">
+      <aside className="bg-secondary hidden min-h-screen flex-col border-r md:flex">
         <Sidebar />
       </aside>
 
       {/* Main content */}
-      <main className="flex flex-1 flex-col">
+      <main className="flex max-w-full md:max-w-[calc(100vw-258px)] flex-1 flex-col">
         
         {children}
         </main>

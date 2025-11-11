@@ -13,7 +13,7 @@ function Sidebar() {
     const isActive = pathname === item.path;
 
     return (
-      <div key={item.path} className="relative w-full">
+      <div key={item.name} className="relative w-full">
         <a
           href={item.path}
           className={clsx(
@@ -39,7 +39,7 @@ function Sidebar() {
   };
 
   return (
-    <nav className="flex h-full min-h-screen flex-col gap-4">
+    <nav className="flex min-w-[258px] h-full min-h-screen flex-col gap-4">
       <Image src="/logo.png" alt="logo" width={126} height={43} className="m-5 self-center" />
 
       <div className="flex flex-col items-center gap-1">

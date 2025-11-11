@@ -1,6 +1,10 @@
+"use client";
+
 import ChartAreaInteractive from '@/components/custom/Chart';
+import { DataTable } from '@/components/custom/dataTable';
 import Section from '@/components/custom/Section';
 import Title from '@/components/custom/Title';
+import { COLUMNS, DUMMY_DATA } from '@/constants';
 
 export default function Home() {
   const data = [
@@ -25,6 +29,7 @@ export default function Home() {
       value: '2,040',
     },
   ];
+
   return (
     <div className="px-8 py-14">
       <Title>Dashboard</Title>
@@ -44,6 +49,10 @@ export default function Home() {
       </div>
 
       <ChartAreaInteractive />
+
+      <div className="w-full max-w-[100vw] mt-7 overflow-hidden">
+        <DataTable columns={COLUMNS} data={DUMMY_DATA} showPagination={false} />
+      </div>
     </div>
   );
 }
