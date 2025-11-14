@@ -39,7 +39,7 @@ function Sidebar() {
   };
 
   return (
-    <nav className="flex min-w-[258px] h-full min-h-screen flex-col gap-4">
+    <nav className="flex h-full min-h-screen min-w-[258px] flex-col gap-4">
       <Image src="/logo.png" alt="logo" width={126} height={43} className="m-5 self-center" />
 
       <div className="flex flex-col items-center gap-1">
@@ -48,7 +48,7 @@ function Sidebar() {
 
       <div className="mt-auto">
         <Separator />
-        
+
         <div className="mt-4 flex flex-col items-center gap-1">
           {SETTING_ROUTES.map((item: IRoutes) => renderItem(item))}
         </div>

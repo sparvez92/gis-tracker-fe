@@ -9,11 +9,13 @@ interface AuthState {
   login: (token: string) => void;
   logout: () => void;
   init: () => void;
+  baseMap: 'osm' | 'satellite' | 'light' | 'dark';
+  setBaseMap: (baseMap: 'osm' | 'satellite' | 'light' | 'dark') => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
-
+  baseMap: 'osm',
   login: (token) => {
     Cookies.set(TOKEN_COOKIE, token, { expires: 30 }); // 7 days
     set({ token });
@@ -28,4 +30,5 @@ export const useAuthStore = create<AuthState>((set) => ({
     const token = Cookies.get(TOKEN_COOKIE) || null;
     set({ token });
   },
+  setBaseMap: (baseMap) => set({ baseMap }),
 }));

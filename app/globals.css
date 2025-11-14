@@ -127,3 +127,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: transparent !important;
+  box-shadow: none !important;
+  margin: 0px !important;
+}
+.leaflet-popup-close-button {
+  display: none !important;
+}
+
+.custom-popup {
+  margin-bottom: 10px !important;
+}
+
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}

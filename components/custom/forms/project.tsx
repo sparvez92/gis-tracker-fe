@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import LocationPickerField from '../LocationPickerField';
 
 // Options for dropdowns
 const yearOptions = [
@@ -33,6 +34,11 @@ const formSchema = z.object({
   endDate: z.date({ message: 'End date is required.' }),
   restorationStartDate: z.date({ message: 'Restoration start date is required.' }),
   restorationEndDate: z.date({ message: 'Restoration end date is required.' }),
+  location: z.object({
+    lat: z.number(),
+    lng: z.number(),
+    address: z.string().optional(),
+  }),
 });
 
 const ProjectForm = () => {
@@ -46,6 +52,11 @@ const ProjectForm = () => {
       year: '',
       townName: '',
       projectType: '',
+      location: {
+        lat: undefined,
+        lng: undefined,
+        address: '',
+      }
     },
   });
 
@@ -61,11 +72,17 @@ const ProjectForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full flex flex-col gap-7 items-center"
+        className="flex w-full flex-col items-center gap-7"
       >
-        <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-7">
+        <div className="grid w-full grid-cols-1 gap-7 md:grid-cols-2">
           <Field form={form} name="permitNo" label="Permit #" placeholder="Enter permit number" />
-          <SelectField form={form} name="year" label="Year" placeholder="Select year" options={yearOptions} />
+          <SelectField
+            form={form}
+            name="year"
+            label="Year"
+            placeholder="Select year"
+            options={yearOptions}
+          />
           <Field form={form} name="townName" label="Town Name" placeholder="Enter Town Name" />
           <SelectField
             form={form}
@@ -79,6 +96,8 @@ const ProjectForm = () => {
           <DatePickerField form={form} name="restorationStartDate" label="Restoration Start Date" />
           <DatePickerField form={form} name="restorationEndDate" label="Restoration End Date" />
         </div>
+
+        <LocationPickerField form={form} name="location" label="Add Location" />
 
         <PrimaryButton label="Add Project" type="submit" isLoading={isLoading} />
       </form>

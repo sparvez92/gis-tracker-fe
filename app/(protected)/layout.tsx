@@ -5,19 +5,26 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Sidebar from '@/components/custom/Sidebar';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { MAP_ROUTE } from '@/constants';
+import MapLegends from '@/components/custom/MapLegends';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-
+  const pathName = usePathname();
   return (
     <div className="bg-background flex min-h-screen">
       {/* Drawer for small screens */}
       <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+        <SheetTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 left-3 md:hidden"
+            className={cn(
+              'absolute top-3 left-3 md:hidden',
+              pathName === MAP_ROUTE && 'bg-white md:flex'
+            )}
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -29,14 +36,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar for large screens */}
       <aside className="bg-secondary hidden min-h-screen flex-col border-r md:flex">
-        <Sidebar />
+        {pathName === MAP_ROUTE ? <MapLegends /> : <Sidebar />}
       </aside>
 
       {/* Main content */}
-      <main className="flex max-w-full md:max-w-[calc(100vw-258px)] flex-1 flex-col">
-        
+      <main className="flex max-w-full flex-1 flex-col md:max-w-[calc(100vw-258px)]">
         {children}
-        </main>
+      </main>
     </div>
   );
 }
