@@ -11,7 +11,7 @@ export default function Home() {
   const data = [
     {
       title: 'Total Permit Projects',
-      icon: '/icons/dashboard/icon.png',
+      icon: '/icons/dashboard/icon4.png',
       value: '40,689',
     },
     {
