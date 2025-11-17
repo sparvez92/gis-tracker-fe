@@ -42,7 +42,7 @@ export default function Home() {
               <h2 className="text-primary text-[16px] font-semibold text-wrap opacity-70">
                 {item.title}
               </h2>
-              <Image src={item.icon} alt={item.title} className="h-[60px] w-[60px]" />
+              <Image src={item.icon} alt={item.title} height={60} width={60} className="h-[60px] w-[60px]" />
             </div>
             <p className="text-2xl font-bold text-gray-900">{item.value}</p>
           </Section>
