@@ -49,13 +49,21 @@ function MapLegends() {
           {Object.keys(BASEMAPS).map((key) => {
             const i = BASEMAPS[key];
             return (
-              <div key={i.label} className="cursor-pointer" onClick={() => {
-                setBaseMap(key)
-              }}>
-                <img src={i.image} alt="Basemap preview" className={cn("h-[97px] w-full object-cover",
-
-                baseMap === key ? 'ring-4 ring-white' : ''
-                )}  />
+              <div
+                key={i.label}
+                className="cursor-pointer"
+                onClick={() => {
+                  setBaseMap(key);
+                }}
+              >
+                <Image
+                  src={i.image}
+                  alt="Basemap preview"
+                  className={cn(
+                    'h-[97px] w-full object-cover',
+                    baseMap === key ? 'ring-4 ring-white' : ''
+                  )}
+                />
                 <span className="mt-2 block text-center text-sm font-medium text-white">
                   {i.label}
                 </span>

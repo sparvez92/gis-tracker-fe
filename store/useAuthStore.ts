@@ -2,15 +2,15 @@
 
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-import { TOKEN_COOKIE } from '@/constants';
+import { BaseMapKey, TOKEN_COOKIE } from '@/constants';
 
 interface AuthState {
   token: string | null;
   login: (token: string) => void;
   logout: () => void;
   init: () => void;
-  baseMap: 'osm' | 'satellite' | 'light' | 'dark';
-  setBaseMap: (baseMap: 'osm' | 'satellite' | 'light' | 'dark') => void;
+  baseMap: BaseMapKey;
+  setBaseMap: (baseMap: BaseMapKey) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

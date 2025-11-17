@@ -157,23 +157,25 @@ export const BASEMAPS: Record<
     label: 'OpenStreetMap',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     subdomains: ['a', 'b', 'c'],
-    image: '/icons/baseMap.png',
+    image: '/icons/basemap.png',
   },
   satellite: {
     label: 'Satellite (Esri)',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    image: '/icons/baseMap.png',
+    image: '/icons/basemap.png',
   },
   light: {
     label: 'Carto Light',
     url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    image: '/icons/baseMap.png',
+    image: '/icons/basemap.png',
 
     subdomains: ['a', 'b', 'c', 'd'],
   },
   dark: {
     label: 'Stadia Dark',
     url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-    image: '/icons/baseMap.png',
+    image: '/icons/basemap.png',
   },
-};
+} as const;
+
+export type BaseMapKey = keyof typeof BASEMAPS;

@@ -5,6 +5,7 @@ import { DataTable } from '@/components/custom/dataTable';
 import Section from '@/components/custom/Section';
 import Title from '@/components/custom/Title';
 import { COLUMNS, DUMMY_DATA } from '@/constants';
+import Image from 'next/image';
 
 export default function Home() {
   const data = [
@@ -41,7 +42,7 @@ export default function Home() {
               <h2 className="text-primary text-[16px] font-semibold text-wrap opacity-70">
                 {item.title}
               </h2>
-              <img src={item.icon} alt={item.title} className="h-[60px] w-[60px]" />
+              <Image src={item.icon} alt={item.title} className="h-[60px] w-[60px]" />
             </div>
             <p className="text-2xl font-bold text-gray-900">{item.value}</p>
           </Section>
