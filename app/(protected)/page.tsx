@@ -16,17 +16,17 @@ export default function Home() {
     },
     {
       title: 'Total Emergency Projects',
-      icon: '/icons/dashboard/icon-1.png',
+      icon: '/icons/dashboard/icon1.png',
       value: '10,293',
     },
     {
       title: 'Completed Constructions',
-      icon: '/icons/dashboard/icon-2.png',
+      icon: '/icons/dashboard/icon2.png',
       value: '89,000',
     },
     {
       title: 'Completed Restorations',
-      icon: '/icons/dashboard/icon-3.png',
+      icon: '/icons/dashboard/icon3.png',
       value: '2,040',
     },
   ];
