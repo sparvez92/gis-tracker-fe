@@ -20,6 +20,11 @@ function Sidebar() {
             'mx-auto flex w-full max-w-[210px] items-center gap-4 rounded-[6px] px-6 py-4 text-sm font-medium text-white transition-all duration-200',
             isActive && 'text-secondary! bg-white'
           )}
+          onClick={() => {
+            if (item.onClick) {
+              item.onClick();
+            }
+          }}
         >
           <Image
             src={isActive ? item.darkIcon : item.lightIcon}

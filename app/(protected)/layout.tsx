@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Sidebar from '@/components/custom/Sidebar';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,17 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { MAP_ROUTE } from '@/constants';
 import MapLegends from '@/components/custom/MapLegends';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathName = usePathname();
+  const { init } = useAuthStore()
+
+  useEffect(() => {
+    init();
+  }, [init])
+
   return (
     <div className="bg-background flex min-h-screen">
       {/* Drawer for small screens */}

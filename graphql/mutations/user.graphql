@@ -1,0 +1,12 @@
+mutation Login($input: UsersPermissionsLoginInput!) {
+  login(input: $input) {
+    user {
+      id
+      documentId
+      username
+      confirmed
+      email
+    }
+    jwt
+  }
+}

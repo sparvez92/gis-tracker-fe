@@ -1,11 +1,13 @@
-"use client"
+'use client';
 import Field from '@/components/custom/Field';
 import PrimaryButton from '@/components/custom/PrimaryButton';
 import { Form } from '@/components/ui/form';
+import { DASHBOARD_ROUTE } from '@/constants';
+import { useLoginMutation } from '@/graphql/mutations/user.generated';
 import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -21,9 +23,12 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
-  const router = useRouter()
-  const {login} = useAuthStore()
+  const router = useRouter();
+  const { login, token, init } = useAuthStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { mutateAsync } = useLoginMutation();
+  console.log({ token });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,19 +38,41 @@ const LoginForm = () => {
     },
   });
 
+  useEffect(() => {
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      router.push(DASHBOARD_ROUTE);
+    }
+  }, [token]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    setIsLoading(true)
-    // Mock login process
-    new Promise((resolve) => {
-      setTimeout(() => {
-        login('mock-token-123456');
-        setIsLoading(false)
-        router.push("/")
-        resolve(true);
-      })
+    setIsLoading(true);
+
+    mutateAsync({
+      input: {
+        identifier: values.email,
+        password: values.password,
+        provider: 'local',
+      },
     })
+      .then((response) => {
+        if (response.login.jwt) {
+          login(response.login.jwt);
+          router.push('/');
+        }
+      })
+      .catch((error) => {
+        console.error('Login error:', error);
+        console.error({ error: error?.message });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
+  
   return (
     <div className="w-full max-w-[516px]">
       <Form {...form}>

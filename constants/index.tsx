@@ -2,6 +2,7 @@ import { Column } from '@/components/custom/dataTable';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/store/useAuthStore';
 import { Download, Edit, Trash2 } from 'lucide-react';
 
 export const TOKEN_COOKIE = 'GIS_APP_TOKEN';
@@ -53,7 +54,10 @@ export const SETTING_ROUTES: IRoutes[] = [
     name: 'Logout',
     lightIcon: '/icons/logoutWhite.png',
     darkIcon: '/icons/logout.png',
-    onClick: () => {},
+    onClick: () => {
+      useAuthStore.getState().logout();
+      window.location.href = '/login';
+    },
   },
 ];
 
