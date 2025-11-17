@@ -19,6 +19,11 @@ const yearOptions = [
   { label: '2023', value: '2023' },
 ];
 
+const pcoOptions = [
+  { label: 'Yes', value: 'yes' },
+  { label: 'No', value: 'no' },
+];
+
 const projectTypeOptions = [
   { label: 'Road Construction', value: 'road_construction' },
   { label: 'Bridge Repair', value: 'bridge_repair' },
@@ -27,13 +32,15 @@ const projectTypeOptions = [
 
 const formSchema = z.object({
   permitNo: z.string().min(1, { message: 'Permit number is required.' }),
+  layoutNo: z.string().min(1, { message: 'Layout number is required.' }),
   year: z.string().min(1, { message: 'Year is required.' }),
+  permitCloseOut: z.string().min(1, { message: 'Permit Close Out is required.' }),
   townName: z.string().min(1, { message: 'Town name is required.' }),
   projectType: z.string().min(1, { message: 'Project type is required.' }),
-  startDate: z.date({ message: 'Start date is required.' }),
-  endDate: z.date({ message: 'End date is required.' }),
-  restorationStartDate: z.date({ message: 'Restoration start date is required.' }),
-  restorationEndDate: z.date({ message: 'Restoration end date is required.' }),
+  startDate: z.date({ message: 'Start date is required.' }).optional(),
+  endDate: z.date({ message: 'End date is required.' }).optional(),
+  restorationStartDate: z.date({ message: 'Restoration start date is required.' }).optional(),
+  restorationEndDate: z.date({ message: 'Restoration end date is required.' }).optional(),
   location: z.object({
     lat: z.number(),
     lng: z.number(),
@@ -49,9 +56,11 @@ const ProjectForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       permitNo: '',
+      layoutNo: '',
       year: '',
       townName: '',
       projectType: '',
+      permitCloseOut: "no",
       location: {
         lat: undefined,
         lng: undefined,
@@ -76,6 +85,7 @@ const ProjectForm = () => {
       >
         <div className="grid w-full grid-cols-1 gap-7 md:grid-cols-2">
           <Field form={form} name="permitNo" label="Permit #" placeholder="Enter permit number" />
+          <Field form={form} name="layoutNo" label="Layout #" placeholder="Enter layout number" />
           <SelectField
             form={form}
             name="year"
@@ -91,8 +101,15 @@ const ProjectForm = () => {
             placeholder="Select project type"
             options={projectTypeOptions}
           />
-          <DatePickerField form={form} name="startDate" label="Start Date" />
-          <DatePickerField form={form} name="endDate" label="End Date" />
+           <SelectField
+            form={form}
+            name="permitCloseOut"
+            label="Permit Closed Out"
+            placeholder="Permit Closed Out"
+            options={pcoOptions}
+          />
+          <DatePickerField form={form} name="startDate" label="Construction Start Date" />
+          <DatePickerField form={form} name="endDate" label="Construction End Date" />
           <DatePickerField form={form} name="restorationStartDate" label="Restoration Start Date" />
           <DatePickerField form={form} name="restorationEndDate" label="Restoration End Date" />
         </div>

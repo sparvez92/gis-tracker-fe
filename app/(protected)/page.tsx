@@ -10,22 +10,22 @@ import Image from 'next/image';
 export default function Home() {
   const data = [
     {
-      title: 'Total Permit Projects',
+      title: 'Total permit projects',
       icon: '/icons/dashboard/icon4.png',
       value: '40,689',
     },
     {
-      title: 'Total Emergency Projects',
+      title: 'Total emergency projects',
       icon: '/icons/dashboard/icon1.png',
       value: '10,293',
     },
     {
-      title: 'Completed Constructions',
+      title: 'Total completed construction projects',
       icon: '/icons/dashboard/icon2.png',
       value: '89,000',
     },
     {
-      title: 'Completed Restorations',
+      title: 'Total completed restoration projects',
       icon: '/icons/dashboard/icon3.png',
       value: '2,040',
     },

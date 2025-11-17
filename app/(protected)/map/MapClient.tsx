@@ -274,7 +274,7 @@ export default function MapClient() {
       </div>
 
       <div className="relative flex-1">
-        <div className="absolute top-5 right-5 z-9999 bg-white">
+        <div className="absolute top-5 right-5 z-20 bg-white">
           <input
             ref={(el) => {
               searchInputRef.current = el;

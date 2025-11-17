@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             variant="ghost"
             size="icon"
             className={cn(
-              'absolute top-3 left-3 md:hidden',
+              'absolute z-30 top-3 left-3 md:hidden',
               pathName === MAP_ROUTE && 'bg-white md:flex'
             )}
           >
@@ -35,12 +35,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </Sheet>
 
       {/* Sidebar for large screens */}
-      <aside className="bg-secondary hidden min-h-screen flex-col border-r md:flex">
+      <aside className="bg-secondary fixed hidden min-h-screen flex-col border-r md:flex">
         {pathName === MAP_ROUTE ? <MapLegends /> : <Sidebar />}
       </aside>
 
       {/* Main content */}
-      <main className="flex max-w-full flex-1 flex-col md:max-w-[calc(100vw-258px)]">
+      <main className="flex max-w-full flex-1 flex-col ml-auto md:max-w-[calc(100vw-258px)]">
         {children}
       </main>
     </div>
