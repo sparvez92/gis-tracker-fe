@@ -2,6 +2,7 @@
 import Field from '@/components/custom/Field';
 import PrimaryButton from '@/components/custom/PrimaryButton';
 import { Form } from '@/components/ui/form';
+import { MAP_ROUTE } from '@/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -41,7 +42,7 @@ const LoginForm = () => {
       setTimeout(() => {
         login('mock-token-123456');
         setIsLoading(false)
-        router.push("/")
+        router.push(MAP_ROUTE)
         resolve(true);
       })
     })

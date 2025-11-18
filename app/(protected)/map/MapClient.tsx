@@ -113,7 +113,16 @@ function LocateButton({ map }: { map: L.Map }) {
       (pos) => {
         const { latitude, longitude } = pos.coords;
         map.flyTo([latitude, longitude], 15);
-        L.marker([latitude, longitude]).addTo(map).bindPopup('You are here').openPopup();
+        L.marker([latitude, longitude])
+          .addTo(map)
+          .setIcon(
+            L.icon({
+              iconUrl: '/icons/location.png',
+              iconSize: [32, 32], // Size of the icon (e.g., 32x32 pixels)
+              iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location (e.g., center bottom)
+              popupAnchor: [0, -32],
+            })
+          );
       },
       () => alert('Unable to retrieve your location')
     );
@@ -284,13 +293,14 @@ export default function MapClient() {
             className="text-primary placeholder:text-placeholder z-9999 h-8 w-80 rounded border px-2 text-sm"
           />
         </div>
-        <MapContainer center={[30.3753, 69.3451]} zoom={6} className="h-full w-full" maxZoom={20}>
+        <MapContainer center={[30.3753, 69.3451]} zoom={6} className="h-full w-full" maxZoom={19}>
           <MapInitializer onReady={(m) => setMap(m)} />
 
           <TileLayer
             url={BASEMAPS[basemapKey].url}
             subdomains={BASEMAPS[basemapKey].subdomains}
             attribution="&copy; OpenStreetMap contributors"
+            maxZoom={19}
           />
 
           {map && <LocateButton map={map!} />}
