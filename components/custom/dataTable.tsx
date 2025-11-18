@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ButtonGroup } from '../ui/button-group';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import TableLegends from './tableLegends';
 
 export interface Column<T> {
   key: keyof T;
@@ -99,6 +100,8 @@ export function DataTable<T>({
           </ButtonGroup>
         </div>
       )}
+
+      <TableLegends />
     </div>
   );
 }

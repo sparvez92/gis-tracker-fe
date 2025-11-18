@@ -12,7 +12,7 @@ function MapLegends() {
   const { baseMap, setBaseMap } = useAuthStore();
 
   return (
-    <nav className="flex h-full min-h-screen min-w-[258px] flex-col gap-4">
+    <nav className="flex h-full min-h-screen max-w-[258px] flex-col gap-4">
       <Image src="/logo.png" alt="logo" width={126} height={43} className="m-5 self-center" />
 
       <div className="flex flex-col gap-6 px-4">
@@ -56,7 +56,7 @@ function MapLegends() {
                   setBaseMap(key);
                 }}
               >
-                <Image
+                <img
                   src={i.image}
                   alt="Basemap preview"
                   className={cn(

@@ -79,18 +79,21 @@ export const YEARS_OPTIONS = getLast20Years().map((year) => ({
 
 export type Permit = {
   permit: string;
+  layout: string;
   year: number;
   town: string;
   startDate: string;
   endDate: string;
   restStart: string;
   restEnd: string;
+  isPermitClosed?: boolean;
   status: 'Completed' | 'In Progress';
 };
 
 export const DUMMY_DATA: Permit[] = [
   {
-    permit: 'PRM-0092',
+    permit: '0092',
+    layout: '9877',
     year: 2023,
     town: 'Brooklyn',
     startDate: '2024-03-15',
@@ -98,9 +101,11 @@ export const DUMMY_DATA: Permit[] = [
     restStart: '2024-03-15',
     restEnd: '2024-03-15',
     status: 'Completed',
+    isPermitClosed: false,
   },
   {
-    permit: 'PRM-0092',
+    permit: '0093',
+    layout: '9878',
     year: 2023,
     town: 'Brooklyn',
     startDate: '2024-03-15',
@@ -108,18 +113,20 @@ export const DUMMY_DATA: Permit[] = [
     restStart: '2024-03-15',
     restEnd: '2024-03-15',
     status: 'In Progress',
+    isPermitClosed: true,
   },
   // add more rows as needed
 ];
 
 export const COLUMNS: Column<Permit>[] = [
   { key: 'permit', label: 'Permit #' },
+  { key: 'layout', label: 'Layout #' },
   { key: 'year', label: 'Year' },
   { key: 'town', label: 'Town' },
-  { key: 'startDate', label: 'Start Date' },
-  { key: 'endDate', label: 'End Date' },
-  { key: 'restStart', label: 'Rest. Start Date' },
-  { key: 'restEnd', label: 'Rest. End Date' },
+  { key: 'startDate', label: 'CSD' },
+  { key: 'endDate', label: 'CED' },
+  { key: 'restStart', label: 'RSD' },
+  { key: 'restEnd', label: 'RED' },
   {
     key: 'status',
     label: 'Status',
@@ -133,6 +140,11 @@ export const COLUMNS: Column<Permit>[] = [
         {value}
       </div>
     ),
+  },
+  {
+    key: 'isPermitClosed',
+    label: 'PCO',
+    render: (value) => <div className={cn()}>{value ? 'Yes' : 'No'}</div>,
   },
   {
     key: 'actions' as any,
@@ -183,3 +195,18 @@ export const BASEMAPS: Record<
 } as const;
 
 export type BaseMapKey = keyof typeof BASEMAPS;
+
+
+export interface LegendItem {
+  abbreviation: string;
+  fullName: string;
+}
+
+// Assume these are your column definitions
+export const defaultLegends: LegendItem[] = [
+  { abbreviation: 'CSD', fullName: 'Construction Start Date' },
+  { abbreviation: 'CED', fullName: 'Construction End Date' },
+  { abbreviation: 'RSD', fullName: 'Restoration Start Date' },
+  { abbreviation: 'RED', fullName: 'Restoration End Date' },
+  { abbreviation: 'PCO', fullName: 'Permit Close Out' },
+];

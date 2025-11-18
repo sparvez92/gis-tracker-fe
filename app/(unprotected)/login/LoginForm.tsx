@@ -2,7 +2,7 @@
 import Field from '@/components/custom/Field';
 import PrimaryButton from '@/components/custom/PrimaryButton';
 import { Form } from '@/components/ui/form';
-import { DASHBOARD_ROUTE } from '@/constants';
+import { DASHBOARD_ROUTE, MAP_ROUTE } from '@/constants';
 import { useLoginMutation } from '@/graphql/mutations/user.generated';
 import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -61,7 +61,7 @@ const LoginForm = () => {
       .then((response) => {
         if (response.login.jwt) {
           login(response.login.jwt);
-          router.push('/');
+          router.push(MAP_ROUTE);
         }
       })
       .catch((error) => {

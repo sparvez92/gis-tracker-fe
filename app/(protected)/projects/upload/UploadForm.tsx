@@ -54,7 +54,7 @@ const UploadForm = () => {
           <FileUploadField
             form={form}
             name="file"
-            label="Upload File"
+            label=""
             accept=".csv"
             maxSizeMB={5}
           />
