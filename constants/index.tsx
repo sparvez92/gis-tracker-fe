@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
+import { Enum_Project_Project_Status, Enum_Project_Project_Type } from '@/types';
 import { Download, Edit, Trash2 } from 'lucide-react';
 
 export const TOKEN_COOKIE = 'GIS_APP_TOKEN';
@@ -196,7 +197,6 @@ export const BASEMAPS: Record<
 
 export type BaseMapKey = keyof typeof BASEMAPS;
 
-
 export interface LegendItem {
   abbreviation: string;
   fullName: string;
@@ -210,3 +210,18 @@ export const defaultLegends: LegendItem[] = [
   { abbreviation: 'RED', fullName: 'Restoration End Date' },
   { abbreviation: 'PCO', fullName: 'Permit Close Out' },
 ];
+
+export const projectStatusOptions = [
+  { label: 'Completed', value: Enum_Project_Project_Status.Completed },
+  { label: 'In Progress', value: Enum_Project_Project_Status.InProgress },
+];
+
+export const projectTypeOptions = [
+  { label: 'Electric Emergency', value: Enum_Project_Project_Type.ElectricEmergency },
+  { label: 'Gas Emergency', value: Enum_Project_Project_Type.GasEmergency },
+  { label: 'Permit', value: Enum_Project_Project_Type.Permit },
+];
+
+export const dateFormatter = (dateString: string) => {
+  return dateString ? dateString.split('T')[0] : null;
+}

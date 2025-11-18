@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/store/useAuthStore";
+
 // lib/strapi-fetch.ts
 const STRAPI_GRAPHQL_ENDPOINT =
   process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337/graphql';
@@ -18,39 +20,28 @@ export function fetcher<TData, TVariables>(query: string, variables?: TVariables
     //   );
     // }
 
+
     try {
+      const token = useAuthStore.getState().token
       console.log('fetching', query, variables);
       const res = await fetch(STRAPI_GRAPHQL_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // ...(accessToken != null && accessToken !== ''
-          //   ? { Authorization: `Bearer ${accessToken}` }
-          //   : {}),
+          ...(token != null && token !== ''
+            ? { Authorization: `Bearer ${token}` }
+            : {}),
         },
         body: JSON.stringify({ query, variables }),
         signal: options?.signal,
       });
-      if (!res.ok) {
-        throw new Error('networkRequestFailed');
-      }
       const responseBody = await res.json();
 
-      // type narrowing to make sure we have the expected json shape
-      // { data: Record<string, any> } | { errors: Error[]}
-      if (typeof responseBody === 'object' && responseBody != null) {
-        // check for error array
-        if ('errors' in responseBody && Array.isArray(responseBody.errors)) {
-          const { message } = responseBody.errors[0];
-          throw new Error(message);
-        }
-        // check for data object
-        if ('data' in responseBody && typeof responseBody.data === 'object') {
-          return responseBody.data as TData;
-        }
+      if(responseBody.errors && responseBody.errors.length > 0) {
+        throw responseBody.errors[0]
       }
 
-      throw new Error('Invalid response from server');
+      return responseBody?.data || responseBody
     } catch (e) {
       throw e;
     }

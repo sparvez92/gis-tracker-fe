@@ -40,7 +40,7 @@ const SelectField = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel className="text-primary text-sm font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select onValueChange={field.onChange} {...field}>
             <FormControl>
               <SelectTrigger className={cn("w-full border-border bg-input-bg placeholder:text-placeholder! h-14! rounded-lg! border text-sm font-semibold text-gray-600 focus-visible:border-gray-300 focus-visible:ring-1 focus-visible:ring-gray-300", className)}>
                 <SelectValue placeholder={placeholder} />

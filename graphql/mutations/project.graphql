@@ -1,0 +1,45 @@
+mutation CreateProject($data: ProjectInput!) {
+  createProject(data: $data) {
+    documentId
+    permit_no
+    year
+    layout_no
+    town
+    project_type
+    const_start_date
+    const_end_date
+    rest_start_date
+    rest_end_date
+    lat
+    lng
+    address
+    project_status
+    createdAt
+    updatedAt
+    publishedAt
+    permit_close_out
+  }
+}
+
+mutation UpdateProject($documentId: ID!, $data: ProjectInput!) {
+  updateProject(documentId: $documentId, data: $data) {
+    documentId
+    permit_no
+    year
+    layout_no
+    town
+    project_type
+    project_status
+    const_start_date
+    const_end_date
+    rest_start_date
+    rest_end_date
+    lat
+    lng
+    address
+    permit_close_out
+    createdAt
+    updatedAt
+    publishedAt
+  }
+}

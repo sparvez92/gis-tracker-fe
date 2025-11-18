@@ -4,13 +4,16 @@ import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { GoogleMap, Marker, useLoadScript, Autocomplete } from '@react-google-maps/api';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>;
   name: Path<T>;
   label?: string;
+  lat?: string;
+  lng?: string;
+  address?: string;
 };
 
 const containerStyle = {
@@ -24,7 +27,14 @@ const defaultCenter = {
   lng: 74.3587,
 };
 
-const LocationPickerField = <T extends FieldValues>({ form, name, label }: Props<T>) => {
+const LocationPickerField = <T extends FieldValues>({
+  form,
+  name,
+  label,
+  lat,
+  lng,
+  address,
+}: Props<T>) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries: ['places'],
@@ -32,6 +42,19 @@ const LocationPickerField = <T extends FieldValues>({ form, name, label }: Props
 
   const [position, setPosition] = useState(defaultCenter);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (lat && lng) {
+      setPosition({ lat: parseFloat(lat), lng: parseFloat(lng) });
+    }
+
+    if (inputRef.current && address) {
+      inputRef.current.value = address;
+    }
+  }, [lat, lng, address, isLoaded]);
 
   const onLoad = useCallback((autocomplete: google.maps.places.Autocomplete) => {
     autocompleteRef.current = autocomplete;
@@ -77,25 +100,13 @@ const LocationPickerField = <T extends FieldValues>({ form, name, label }: Props
             <div className="space-y-2">
               <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
                 <Input
+                  ref={inputRef}
                   placeholder="Type location here"
                   className={cn(
                     'border-border bg-input-bg placeholder:text-placeholder h-14 rounded-lg border text-lg font-semibold text-gray-600 focus-visible:border-gray-300 focus-visible:ring-1 focus-visible:ring-gray-300'
                   )}
                 />
               </Autocomplete>
-
-              {/* <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={position}
-                zoom={6}
-                onClick={handleMapClick}
-                options={{
-                  fullscreenControl: false,
-                  streetView: 
-                }}
-              >
-                <Marker position={position} draggable />
-              </GoogleMap> */}
 
               <GoogleMap
                 mapContainerStyle={containerStyle}

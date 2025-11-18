@@ -101,6 +101,11 @@ export type DeleteMutationResponse = {
   documentId: Scalars['ID']['output'];
 };
 
+export enum Enum_Project_Project_Status {
+  Completed = 'completed',
+  InProgress = 'in_progress',
+}
+
 export enum Enum_Project_Project_Type {
   ElectricEmergency = 'electric_emergency',
   GasEmergency = 'gas_emergency',
@@ -422,7 +427,9 @@ export type Project = {
   lat?: Maybe<Scalars['String']['output']>;
   layout_no: Scalars['String']['output'];
   lng?: Maybe<Scalars['String']['output']>;
+  permit_close_out?: Maybe<Scalars['Boolean']['output']>;
   permit_no: Scalars['String']['output'];
+  project_status?: Maybe<Enum_Project_Project_Status>;
   project_type: Enum_Project_Project_Type;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   rest_end_date?: Maybe<Scalars['Date']['output']>;
@@ -450,7 +457,9 @@ export type ProjectFiltersInput = {
   lng?: InputMaybe<StringFilterInput>;
   not?: InputMaybe<ProjectFiltersInput>;
   or?: InputMaybe<Array<InputMaybe<ProjectFiltersInput>>>;
+  permit_close_out?: InputMaybe<BooleanFilterInput>;
   permit_no?: InputMaybe<StringFilterInput>;
+  project_status?: InputMaybe<StringFilterInput>;
   project_type?: InputMaybe<StringFilterInput>;
   publishedAt?: InputMaybe<DateTimeFilterInput>;
   rest_end_date?: InputMaybe<DateFilterInput>;
@@ -467,7 +476,9 @@ export type ProjectInput = {
   lat?: InputMaybe<Scalars['String']['input']>;
   layout_no?: InputMaybe<Scalars['String']['input']>;
   lng?: InputMaybe<Scalars['String']['input']>;
+  permit_close_out?: InputMaybe<Scalars['Boolean']['input']>;
   permit_no?: InputMaybe<Scalars['String']['input']>;
+  project_status?: InputMaybe<Enum_Project_Project_Status>;
   project_type?: InputMaybe<Enum_Project_Project_Type>;
   publishedAt?: InputMaybe<Scalars['DateTime']['input']>;
   rest_end_date?: InputMaybe<Scalars['Date']['input']>;
