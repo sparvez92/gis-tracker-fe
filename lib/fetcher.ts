@@ -1,8 +1,30 @@
 import { useAuthStore } from "@/store/useAuthStore";
 
 // lib/strapi-fetch.ts
-const STRAPI_GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337/graphql';
+const STRAPI_ENDPOINT = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+const STRAPI_GRAPHQL_ENDPOINT = `${STRAPI_ENDPOINT}/graphql`;
+
+  export async function uploadProjectsCsv(file: File) {
+  const token = useAuthStore.getState().token;
+
+  const formData = new FormData();
+  formData.append("files", file);
+
+  const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/upload-csv`, {
+    method: "POST",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err?.error?.message || "Upload failed");
+  }
+
+  return res.json();
+}
 
 export function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
   return async (options?: { signal?: AbortSignal }): Promise<TData> => {

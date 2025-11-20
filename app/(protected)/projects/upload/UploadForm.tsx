@@ -3,6 +3,7 @@ import Field from '@/components/custom/Field';
 import FileUploadField from '@/components/custom/FileUploadField';
 import PrimaryButton from '@/components/custom/PrimaryButton';
 import { Form } from '@/components/ui/form';
+import { uploadProjectsCsv } from '@/lib/fetcher';
 import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -34,18 +35,11 @@ const UploadForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    setIsLoading(true);
+    // setIsLoading(true);
     // Mock login process
-    new Promise((resolve) => {
-      setTimeout(() => {
-        login('mock-token-123456');
-        setIsLoading(false);
-        router.push('/');
-        resolve(true);
-      });
-    });
+    const response = await uploadProjectsCsv(values.file)
   }
   return (
     <div className="w-full">
