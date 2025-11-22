@@ -19,6 +19,7 @@ import { dateFormatter, PROJECTS_ROUTE, projectTypeOptions } from '@/constants';
 import { Enum_Project_Project_Type, ProjectInput } from '@/types';
 import { useGetSingleProjectQuery } from '@/graphql/queries/project.generated';
 import { Skeleton } from '@/components/ui/skeleton';
+import { notify } from '@/lib/utils';
 
 // Options for dropdowns
 const yearOptions = [
@@ -154,6 +155,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
       data: payload,
     })
       .then(() => {
+        notify('Project created successfully.');
         router.push(PROJECTS_ROUTE);
         form.reset();
       })
@@ -171,6 +173,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
       documentId: params?.id || '',
     })
       .then(() => {
+        notify("Project updated successfully");
         router.push(PROJECTS_ROUTE);
         form.reset();
       })

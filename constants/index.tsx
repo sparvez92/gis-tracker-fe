@@ -225,3 +225,12 @@ export const projectTypeOptions = [
 export const dateFormatter = (dateString: string) => {
   return dateString ? dateString.split('T')[0] : null;
 }
+
+export const ALERT_TYPES = {
+  info: 'info',
+  success: 'success',
+  warning: 'warning',
+  error: 'error',
+} as const;
+
+export type IAlertType = typeof ALERT_TYPES[keyof typeof ALERT_TYPES];

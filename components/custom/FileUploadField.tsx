@@ -2,7 +2,6 @@
 
 import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { UploadCloud } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
@@ -22,8 +21,10 @@ const FileUploadField = <T extends FieldValues>({
   accept = '.csv',
   maxSizeMB = 5,
 }: Props<T>) => {
-  const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const field:File = form.watch(name)
+  console.log({field})
 
   const handleFile = useCallback(
     (file: File) => {
@@ -40,7 +41,6 @@ const FileUploadField = <T extends FieldValues>({
       }
 
       form.setValue(name, file as any);
-      setFileName(file.name);
     },
     [form, name, maxSizeMB]
   );
@@ -91,8 +91,8 @@ const FileUploadField = <T extends FieldValues>({
               )}
             >
               <Image src="/icons/upload.png" alt="Upload Icon" width={26} height={26} />
-              {fileName ? (
-                <p className="text-base font-medium text-gray-700">{fileName}</p>
+              {field?.name ? (
+                <p className="text-base font-medium text-gray-700">{field?.name}</p>
               ) : (
                 <p className="max-w-xs text-center text-sm font-medium text-[#A6A6A6]">
                   Drag & drop your file here or click to upload. <br />

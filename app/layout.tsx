@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Nunito_Sans } from 'next/font/google';
 import './globals.css';
 import QueryProvider from '@/lib/queryProvider';
-import { useAuthStore } from '@/store/useAuthStore';
+import { ToastContainer } from 'react-toastify';
 
 const nunitoSans = Nunito_Sans({
   variable: '--font-nunito-sans',
@@ -23,7 +23,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${nunitoSans.variable} antialiased`}>
         <QueryProvider>
-            {children}
+          <ToastContainer />
+          {children}
         </QueryProvider>
       </body>
     </html>
