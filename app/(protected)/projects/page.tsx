@@ -6,7 +6,6 @@ import { COLUMNS, DUMMY_DATA } from '@/constants';
 import { useProjectsQuery } from '@/graphql/queries/project.generated';
 
 const AddProject = () => {
-  const { data, isLoading } = useProjectsQuery({});
   return (
     <div className="px-8 py-14">
       <Title>Projects</Title>
@@ -15,7 +14,7 @@ const AddProject = () => {
       </div>
 
       <div className="w-full max-w-[100vw] overflow-hidden">
-        <DataTable columns={COLUMNS} data={DUMMY_DATA} showPagination />
+        <DataTable columns={COLUMNS} showPagination />
       </div>
     </div>
   );

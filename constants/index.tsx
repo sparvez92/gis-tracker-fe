@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Enum_Project_Project_Status, Enum_Project_Project_Type } from '@/types';
+import { Enum_Project_Project_Status, Enum_Project_Project_Type, Project } from '@/types';
 import { Download, Edit, Trash2 } from 'lucide-react';
 
 export const TOKEN_COOKIE = 'GIS_APP_TOKEN';
@@ -119,53 +119,6 @@ export const DUMMY_DATA: Permit[] = [
   // add more rows as needed
 ];
 
-export const COLUMNS: Column<Permit>[] = [
-  { key: 'permit', label: 'Permit #' },
-  { key: 'layout', label: 'Layout #' },
-  { key: 'year', label: 'Year' },
-  { key: 'town', label: 'Town' },
-  { key: 'startDate', label: 'CSD' },
-  { key: 'endDate', label: 'CED' },
-  { key: 'restStart', label: 'RSD' },
-  { key: 'restEnd', label: 'RED' },
-  {
-    key: 'status',
-    label: 'Status',
-    render: (value) => (
-      <div
-        className={cn(
-          value === 'Completed' ? 'bg-[#00B69B]' : 'bg-[#FCBE2D]',
-          'w-[94px] rounded-full p-2 px-2 py-1 text-center text-sm font-bold text-white transition-colors'
-        )}
-      >
-        {value}
-      </div>
-    ),
-  },
-  {
-    key: 'isPermitClosed',
-    label: 'PCO',
-    render: (value) => <div className={cn()}>{value ? 'Yes' : 'No'}</div>,
-  },
-  {
-    key: 'actions' as any,
-    label: 'Actions',
-    render: () => (
-      <ButtonGroup className="flex gap-0">
-        <Button size="icon" variant="outline">
-          <Edit className="h-4 w-4" />
-        </Button>
-        <Button size="icon" variant="outline">
-          <Download className="h-4 w-4" />
-        </Button>
-        <Button size="icon" variant="outline" className="text-red-500 hover:text-red-600">
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </ButtonGroup>
-    ),
-  },
-];
-
 export const BASEMAPS: Record<
   string,
   { label: string; url: string; subdomains?: string[]; image: string }
@@ -224,7 +177,7 @@ export const projectTypeOptions = [
 
 export const dateFormatter = (dateString: string) => {
   return dateString ? dateString.split('T')[0] : null;
-}
+};
 
 export const ALERT_TYPES = {
   info: 'info',
@@ -233,4 +186,65 @@ export const ALERT_TYPES = {
   error: 'error',
 } as const;
 
-export type IAlertType = typeof ALERT_TYPES[keyof typeof ALERT_TYPES];
+export type IAlertType = (typeof ALERT_TYPES)[keyof typeof ALERT_TYPES];
+
+export const COLUMNS: Column<Project>[] = [
+  { key: 'permit_no', label: 'Permit #' },
+  { key: 'layout_no', label: 'Layout #' },
+  { key: 'year', label: 'Year' },
+  { key: 'town', label: 'Town' },
+  {
+    key: 'const_start_date',
+    label: 'CSD',
+    render: (value) => {
+      return value || '-';
+    },
+  },
+  {
+    key: 'const_end_date',
+    label: 'CED',
+    render: (value) => {
+      return value || '-';
+    },
+  },
+  {
+    key: 'rest_start_date',
+    label: 'RSD',
+    render: (value) => {
+      return value || '-';
+    },
+  },
+  {
+    key: 'rest_end_date',
+    label: 'RED',
+    render: (value) => {
+      return value || '-';
+    },
+  },
+  {
+    key: 'project_status',
+    label: 'Status',
+    render: (
+      value: Enum_Project_Project_Status.Completed | Enum_Project_Project_Status.InProgress
+    ) => {
+      const projectStatus = projectStatusOptions.find((r) => r.value === value);
+      return (
+        <div
+          className={cn(
+            projectStatus?.value === Enum_Project_Project_Status.Completed
+              ? 'bg-[#00B69B]'
+              : 'bg-[#FCBE2D]',
+            'w-[94px] rounded-full p-2 px-2 py-1 text-center text-sm font-bold text-white transition-colors'
+          )}
+        >
+          {projectStatus?.label}
+        </div>
+      );
+    },
+  },
+  {
+    key: 'permit_close_out',
+    label: 'PCO',
+    render: (value) => <div className={cn()}>{value ? 'Yes' : 'No'}</div>,
+  },
+];

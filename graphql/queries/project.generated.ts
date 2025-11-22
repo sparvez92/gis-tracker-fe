@@ -5,29 +5,41 @@ import { fetcher } from '../../lib/fetcher';
 export type ProjectsQueryVariables = Types.Exact<{
   filters?: Types.InputMaybe<Types.ProjectFiltersInput>;
   pagination?: Types.InputMaybe<Types.PaginationArg>;
-  sort?: Types.InputMaybe<
-    | Array<Types.InputMaybe<Types.Scalars['String']['input']>>
-    | Types.InputMaybe<Types.Scalars['String']['input']>
-  >;
 }>;
 
 export type ProjectsQuery = {
   __typename?: 'Query';
-  projects: Array<{
-    __typename?: 'Project';
-    documentId: string;
-    permit_no: string;
-    year: string;
-    layout_no: string;
-    town?: string | null;
-    project_type: Types.Enum_Project_Project_Type;
-    project_status?: Types.Enum_Project_Project_Status | null;
-    const_start_date?: any | null;
-    const_end_date?: any | null;
-    rest_start_date?: any | null;
-    rest_end_date?: any | null;
-    permit_close_out?: boolean | null;
-  } | null>;
+  projects_connection?: {
+    __typename?: 'ProjectEntityResponseCollection';
+    nodes: Array<{
+      __typename?: 'Project';
+      documentId: string;
+      permit_no: string;
+      year: string;
+      layout_no: string;
+      town?: string | null;
+      project_type: Types.Enum_Project_Project_Type;
+      project_status?: Types.Enum_Project_Project_Status | null;
+      const_start_date?: any | null;
+      const_end_date?: any | null;
+      rest_start_date?: any | null;
+      rest_end_date?: any | null;
+      lat?: string | null;
+      lng?: string | null;
+      address?: string | null;
+      permit_close_out?: boolean | null;
+      createdAt?: any | null;
+      updatedAt?: any | null;
+      publishedAt?: any | null;
+    }>;
+    pageInfo: {
+      __typename?: 'Pagination';
+      total: number;
+      page: number;
+      pageSize: number;
+      pageCount: number;
+    };
+  } | null;
 };
 
 export type GetSingleProjectQueryVariables = Types.Exact<{
@@ -60,20 +72,34 @@ export type GetSingleProjectQuery = {
 };
 
 export const ProjectsDocument = `
-    query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg, $sort: [String]) {
-  projects(filters: $filters, pagination: $pagination, sort: $sort) {
-    documentId
-    permit_no
-    year
-    layout_no
-    town
-    project_type
-    project_status
-    const_start_date
-    const_end_date
-    rest_start_date
-    rest_end_date
-    permit_close_out
+    query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg) {
+  projects_connection(filters: $filters, pagination: $pagination) {
+    nodes {
+      documentId
+      permit_no
+      year
+      layout_no
+      town
+      project_type
+      project_status
+      const_start_date
+      const_end_date
+      rest_start_date
+      rest_end_date
+      lat
+      lng
+      address
+      permit_close_out
+      createdAt
+      updatedAt
+      publishedAt
+    }
+    pageInfo {
+      total
+      page
+      pageSize
+      pageCount
+    }
   }
 }
     `;

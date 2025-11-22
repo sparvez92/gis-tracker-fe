@@ -1,17 +1,31 @@
-query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg, $sort: [String]) {
-  projects(filters: $filters, pagination: $pagination, sort: $sort) {
-    documentId
-    permit_no
-    year
-    layout_no
-    town
-    project_type
-    project_status
-    const_start_date
-    const_end_date
-    rest_start_date
-    rest_end_date
-    permit_close_out
+query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg) {
+  projects_connection(filters: $filters, pagination: $pagination) {
+    nodes {
+      documentId
+      permit_no
+      year
+      layout_no
+      town
+      project_type
+      project_status
+      const_start_date
+      const_end_date
+      rest_start_date
+      rest_end_date
+      lat
+      lng
+      address
+      permit_close_out
+      createdAt
+      updatedAt
+      publishedAt
+    }
+    pageInfo {
+      total
+      page
+      pageSize
+      pageCount
+    }
   }
 }
 
