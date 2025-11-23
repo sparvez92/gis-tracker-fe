@@ -189,8 +189,20 @@ export const ALERT_TYPES = {
 export type IAlertType = (typeof ALERT_TYPES)[keyof typeof ALERT_TYPES];
 
 export const COLUMNS: Column<Project>[] = [
-  { key: 'permit_no', label: 'Permit #' },
-  { key: 'layout_no', label: 'Layout #' },
+  {
+    key: 'permit_no',
+    label: 'Permit #',
+    render: (value: Project['permit_no']) => {
+      return value ? value.slice(-4) : '-';
+    },
+  },
+  {
+    key: 'layout_no',
+    label: 'Layout #',
+    render: (value: Project['layout_no']) => {
+      return value ? value.slice(-4) : '-';
+    },
+  },
   { key: 'year', label: 'Year' },
   { key: 'town', label: 'Town' },
   {

@@ -16,6 +16,12 @@ import TableLegends from './tableLegends';
 import { useProjectsQuery } from '@/graphql/queries/project.generated';
 import { Project } from '@/types';
 import { useRouter } from 'next/navigation';
+import { downloadPdf } from '@/lib/fetcher';
+import CommonModal from './CommonModal';
+import { useDeleteProjectMutation } from '@/graphql/mutations/project.generated';
+import { notify } from '@/lib/utils';
+import { ALERT_TYPES } from '@/constants';
+import PrimaryButton from './PrimaryButton';
 
 export interface Column<T> {
   key: keyof T;
@@ -29,13 +35,12 @@ interface DataTableProps<T> {
   showPagination?: boolean;
 }
 
-export function DataTable<T>({
-  columns,
-  pageSize = 10,
-  showPagination = true,
-}: DataTableProps<T>) {
-  const router = useRouter()
+export function DataTable<T>({ columns, pageSize = 10, showPagination = true }: DataTableProps<T>) {
+  const router = useRouter();
   const [page, setPage] = useState(1);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { data, isLoading } = useProjectsQuery({
     pagination: {
@@ -44,23 +49,18 @@ export function DataTable<T>({
     },
   });
 
+  const { mutateAsync } = useDeleteProjectMutation();
 
-  const {
-    paginatedData,
-    startIndex,
-    endIndex,
-    totalData,
-    totalPages,
-  } = useMemo(() => {
+  const { paginatedData, startIndex, endIndex, totalData, totalPages } = useMemo(() => {
     const pageInfo = data?.projects_connection?.pageInfo;
-  
+
     const page = pageInfo?.page ?? 1;
     const pageSize = pageInfo?.pageSize ?? 10;
     const total = pageInfo?.total ?? 0;
-  
+
     const startIndex = (page - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, total);
-  
+
     return {
       paginatedData: data?.projects_connection?.nodes ?? [],
       startIndex,
@@ -69,30 +69,63 @@ export function DataTable<T>({
       totalPages: pageInfo?.pageCount ?? 1,
     };
   }, [data]);
-  
-  const actionColumn =   {
+
+  const openDeleteModal = (project: Project) => {
+    setSelectedProject(project);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteProject = () => {
+    if (!selectedProject) return;
+
+    setDeleteLoading(true);
+
+    mutateAsync({ documentId: selectedProject.documentId })
+      .then(() => {
+        setShowDeleteModal(false);
+        setSelectedProject(null);
+        notify('Project deleted successfully');
+      })
+      .catch((error) => {
+        notify(error.message, ALERT_TYPES.error);
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+      });
+  };
+
+  const actionColumn = {
     key: 'actions' as any,
     label: 'Actions',
     render: (_: any, row: Project) => (
       <ButtonGroup className="flex gap-0">
-        <Button size="icon" variant="outline" onClick={() => {
-          router.push("/projects/update/" + row.documentId)
-        }}>
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => {
+            router.push('/projects/update/' + row.documentId);
+          }}
+        >
           <Edit className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline">
+
+        <Button size="icon" variant="outline" onClick={() => downloadPdf(row)}>
           <Download className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline" className="text-red-500 hover:text-red-600">
+
+        <Button
+          size="icon"
+          variant="outline"
+          className="text-red-500 hover:text-red-600"
+          onClick={() => openDeleteModal(row)}
+        >
           <Trash2 className="h-4 w-4" />
         </Button>
       </ButtonGroup>
     ),
-  }
+  };
 
-  const allColumns: Column<Project>[] = [...columns, actionColumn]
-
-  console.log({ startIndex, endIndex, totalData, totalPages });
+  const allColumns: Column<Project>[] = [...columns, actionColumn];
 
   return (
     <div className="relative w-full max-w-full overflow-hidden">
@@ -156,6 +189,37 @@ export function DataTable<T>({
       )}
 
       <TableLegends />
+
+      <CommonModal open={showDeleteModal} setOpen={setShowDeleteModal} title="Delete Project">
+        <div className="space-y-4">
+          <p className="text-primary text-sm">
+            Are you sure you want to delete the project {selectedProject?.permit_no}?
+          </p>
+
+          <div className="flex w-full gap-2">
+            <Button
+              className="flex-1"
+              type="button"
+              variant={'outline'}
+              disabled={isLoading}
+              onClick={() => {
+                setShowDeleteModal(false);
+              }}
+            >
+              Cancel
+            </Button>
+
+            <PrimaryButton
+              className="bg-secondary hover:bg-secondary h-9 flex-1 rounded-md hover:opacity-85"
+              onClick={handleDeleteProject}
+              label="Yes"
+              isLoading={deleteLoading}
+              type="button"
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      </CommonModal>
     </div>
   );
 }

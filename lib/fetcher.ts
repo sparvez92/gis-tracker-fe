@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/store/useAuthStore';
 import { notify } from './utils';
 import { ALERT_TYPES } from '@/constants';
+import { Project } from '@/types';
 
 // lib/strapi-fetch.ts
 const STRAPI_ENDPOINT = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
@@ -82,4 +83,55 @@ export function fetcher<TData, TVariables>(query: string, variables?: TVariables
       throw e;
     }
   };
+}
+
+export async function downloadPdf(projectInfo: Project) {
+  const token = useAuthStore.getState().token;
+
+  const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/generateProjectPDF/${projectInfo?.documentId}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    let errJson;
+    try {
+      errJson = await res.json();
+    } catch {
+      throw new Error('Something went wrong while downloading PDF');
+    }
+
+    const errorMessage = errJson?.error?.message || 'Something went wrong';
+
+    if (errJson?.error?.status === 401) {
+      notify('Session expired. Please log in again.', ALERT_TYPES.error);
+      useAuthStore.getState().logout();
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
+
+      throw new Error(errorMessage);
+    }
+
+    notify(errorMessage, ALERT_TYPES.error);
+    throw new Error(errorMessage);
+  }
+
+  // IMPORTANT: PDF is binary -> read as BLOB
+  const blob = await res.blob();
+
+  // Create a temporary download link
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Project Permit# ${projectInfo.permit_no}.pdf`;
+  a.click();
+
+  // Cleanup
+  URL.revokeObjectURL(url);
+
+  return true;
 }

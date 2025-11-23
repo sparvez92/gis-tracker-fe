@@ -43,3 +43,9 @@ mutation UpdateProject($documentId: ID!, $data: ProjectInput!) {
     publishedAt
   }
 }
+
+mutation DeleteProject($documentId: ID!) {
+  deleteProject(documentId: $documentId) {
+    documentId
+  }
+}

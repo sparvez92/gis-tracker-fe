@@ -61,6 +61,15 @@ export type UpdateProjectMutation = {
   } | null;
 };
 
+export type DeleteProjectMutationVariables = Types.Exact<{
+  documentId: Types.Scalars['ID']['input'];
+}>;
+
+export type DeleteProjectMutation = {
+  __typename?: 'Mutation';
+  deleteProject?: { __typename?: 'DeleteMutationResponse'; documentId: string } | null;
+};
+
 export const CreateProjectDocument = `
     mutation CreateProject($data: ProjectInput!) {
   createProject(data: $data) {
@@ -143,6 +152,33 @@ export const useUpdateProjectMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: UpdateProjectMutationVariables) =>
       fetcher<UpdateProjectMutation, UpdateProjectMutationVariables>(
         UpdateProjectDocument,
+        variables
+      )(),
+    ...options,
+  });
+};
+
+export const DeleteProjectDocument = `
+    mutation DeleteProject($documentId: ID!) {
+  deleteProject(documentId: $documentId) {
+    documentId
+  }
+}
+    `;
+
+export const useDeleteProjectMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    DeleteProjectMutation,
+    TError,
+    DeleteProjectMutationVariables,
+    TContext
+  >
+) => {
+  return useMutation<DeleteProjectMutation, TError, DeleteProjectMutationVariables, TContext>({
+    mutationKey: ['DeleteProject'],
+    mutationFn: (variables?: DeleteProjectMutationVariables) =>
+      fetcher<DeleteProjectMutation, DeleteProjectMutationVariables>(
+        DeleteProjectDocument,
         variables
       )(),
     ...options,
