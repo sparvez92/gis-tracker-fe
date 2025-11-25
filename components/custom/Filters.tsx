@@ -8,25 +8,16 @@ import { DateRange } from 'react-day-picker';
 import Field from './Field';
 import SelectField from './SelectField';
 import DatePickerField from './DatePickerField';
-import { UPLOAD_CSV, YEARS_OPTIONS } from '@/constants';
+import { IProjectFilters, UPLOAD_CSV, YEARS_OPTIONS } from '@/constants';
 import { useRouter } from 'next/navigation';
 
-type Filters = {
-  search: string;
-  year: string;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  restStartDate: Date | undefined;
-  restEndDate: Date | undefined;
-};
-
 type Props = {
-  onFilterChange?: (filters: Filters) => void;
+  onFilterChange?: (filters: IProjectFilters) => void;
 };
 
 export default function SearchFilterHeader({ onFilterChange = () => {} }: Props) {
   const router = useRouter();
-  const form = useForm<Filters>({
+  const form = useForm<IProjectFilters>({
     defaultValues: {
       search: '',
       year: '',
@@ -40,10 +31,21 @@ export default function SearchFilterHeader({ onFilterChange = () => {} }: Props)
   // Trigger API when form changes
   useEffect(() => {
     const subscription = form.watch((values) => {
-      onFilterChange(values as Filters);
+      onFilterChange(values as IProjectFilters);
     });
     return () => subscription.unsubscribe();
   }, [form.watch, onFilterChange]);
+
+  const clearFilters = () => {
+    form.reset({
+      search: '',
+      year: '',
+      startDate: undefined,
+      endDate: undefined,
+      restStartDate: undefined,
+      restEndDate: undefined,
+    });
+  };
 
   return (
     <Form {...form}>
@@ -61,13 +63,13 @@ export default function SearchFilterHeader({ onFilterChange = () => {} }: Props)
           <Button
             onClick={() => router.push(UPLOAD_CSV)}
             type="button"
-            className="bg-secondary hover:bg-secondary text-sm font-bold hover:opacity-85 cursor-pointer"
+            className="bg-secondary hover:bg-secondary cursor-pointer text-sm font-bold hover:opacity-85"
           >
             Upload CSV
           </Button>
         </div>
 
-        {/* 🔽 Filters Row */}
+        {/* 🔽 IProjectFilters Row */}
         <div className="my-3 grid grid-cols-1 items-center gap-3 md:grid-cols-2 lg:grid-cols-4">
           {/* Status */}
           <SelectField
@@ -110,6 +112,14 @@ export default function SearchFilterHeader({ onFilterChange = () => {} }: Props)
             name="restEndDate"
             className="h-10! w-full flex-1 rounded-sm! border-[#D5D5D5] bg-white"
           />
+
+          <Button
+            onClick={clearFilters}
+            type="button"
+            className="bg-secondary hover:bg-secondary cursor-pointer text-sm font-bold hover:opacity-85"
+          >
+            Clear Filters
+          </Button>
         </div>
       </form>
     </Form>

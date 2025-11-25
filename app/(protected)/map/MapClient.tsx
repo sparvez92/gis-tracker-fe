@@ -1,39 +1,36 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Printer, MapPin } from 'lucide-react';
-import { BASEMAPS } from '@/constants';
+import { ALERT_TYPES, BASEMAPS } from '@/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import MapFilters from '@/components/custom/MapFilters';
+import { notify } from '@/lib/utils';
+import { useProjectsQuery } from '@/graphql/queries/project.generated';
+import { Enum_Project_Project_Type, Project } from '@/types';
+import { downloadPdf } from '@/lib/fetcher';
 
 /* ---------- Assets / Icons (replace with your actual icons in public/icons) ---------- */
-const iconA = L.icon({
+const GasEmergencyIcon = L.icon({
   iconUrl: '/icons/marker-blue.svg',
   iconSize: [15, 15],
   iconAnchor: [15, 15],
 });
-const iconB = L.icon({
+const PermitIcon = L.icon({
   iconUrl: '/icons/marker-green.svg',
   iconSize: [15, 15],
   iconAnchor: [15, 15],
 });
-const iconC = L.icon({
+const ElectricEmergencyIcon = L.icon({
   iconUrl: '/icons/marker-red.svg',
   iconSize: [15, 15],
   iconAnchor: [15, 15],
 });
 
-/* ---------------- Dummy markers ---------------- */
-const DUMMY_MARKERS = [
-  { id: 1, name: 'Project A', lat: 24.8607, lng: 67.0011, type: 'A' },
-  { id: 2, name: 'Project B', lat: 25.396, lng: 68.3578, type: 'B' },
-  { id: 3, name: 'Project C', lat: 33.6844, lng: 73.0479, type: 'C' },
-];
-
-function CustomPopup({ data, onClose }: { data: any; onClose: () => void }) {
+function CustomPopup({ data }: { data: Project; onClose: () => void }) {
   return (
     <Popup offset={[0, 0]} className="custom-popup" closeOnClick>
       <div className="w-[270px] overflow-hidden rounded-2xl shadow-md">
@@ -41,7 +38,7 @@ function CustomPopup({ data, onClose }: { data: any; onClose: () => void }) {
         <div className="flex items-center justify-between bg-[#1E1B58] px-4 py-5 text-white">
           <h3 className="text-lg font-semibold">Brooklyy</h3>
           <div className="flex items-center gap-2">
-            <Printer size={26} className="cursor-pointer" />
+            <Printer size={26} className="cursor-pointer" onClick={() => downloadPdf(data)} />
           </div>
         </div>
 
@@ -49,7 +46,12 @@ function CustomPopup({ data, onClose }: { data: any; onClose: () => void }) {
         <div className="flex flex-col gap-4 bg-white px-8 py-8">
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Permit # :</span>
-            <span className="font-medium">{data.permit}</span>
+            <span className="font-medium">{data.permit_no}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-primary text-sm font-semibold">Layout # :</span>
+            <span className="font-medium">{data.layout_no}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Year :</span>
@@ -61,15 +63,19 @@ function CustomPopup({ data, onClose }: { data: any; onClose: () => void }) {
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Start Date :</span>
-            <span>{data.start}</span>
+            <span>{data.const_start_date || '-'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">End Date :</span>
-            <span>{data.end}</span>
+            <span>{data.const_end_date || '-'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-primary text-sm font-semibold">Restoration Date :</span>
-            <span>{data.restore}</span>
+            <span className="text-primary text-sm font-semibold">Restoration Start Date :</span>
+            <span>{data.rest_start_date || '-'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-primary text-sm font-semibold">Restoration End Date :</span>
+            <span>{data.rest_start_date || '-'}</span>
           </div>
         </div>
       </div>
@@ -164,12 +170,45 @@ function LocateButton({ map }: { map: L.Map }) {
 /* ---------- Main Component ---------- */
 export default function MapClient() {
   const [map, setMap] = useState<L.Map | null>(null); // will be set by MapInitializer
-  const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<string>('');
   const [userCoords, setUserCoords] = useState<L.LatLng | null>(null);
   const { baseMap: basemapKey } = useAuthStore();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const googleScriptLoaded = useRef(false);
+  const [filters, setFilters] = useState<{
+    search: string;
+    year: string;
+    projectType: Enum_Project_Project_Type | '';
+  }>({
+    search: '',
+    year: '',
+    projectType: '',
+  });
+
+  const { data: projectsData } = useProjectsQuery({
+    pagination: {
+      limit: 100000,
+    },
+    filters: {
+      year: { eq: filters.year || undefined },
+      project_type: { eq: filters.projectType || undefined },
+      or: filters.search
+        ? [
+            {
+              permit_no: { containsi: filters.search || undefined },
+            },
+            { layout_no: { containsi: filters.search || undefined } },
+            { town: { containsi: filters.search || undefined } },
+            { address: { containsi: filters.search || undefined } },
+          ]
+        : [],
+    },
+  });
+
+  const projectsList = useMemo(() => {
+    return projectsData?.projects_connection?.nodes || [];
+  }, [projectsData]);
 
   /* ---------- Load Google Maps JS script (Places library) ---------- */
   useEffect(() => {
@@ -207,7 +246,6 @@ export default function MapClient() {
   }, []);
 
   function initAutocomplete() {
-    debugger;
     if (!searchInputRef.current) return;
     // guard for google
     // @ts-ignore
@@ -259,17 +297,20 @@ export default function MapClient() {
     map.on('locationfound', onFound);
 
     const onError = () => {
-      alert('Could not detect location. Please allow location access in your browser.');
+      notify(
+        'Could not detect location. Please allow location access in your browser.',
+        ALERT_TYPES.error
+      );
       map.off('locationerror', onError);
     };
     map.on('locationerror', onError);
   };
 
   /* ---------- small helper to pick marker icon by type ---------- */
-  const iconByType = (t: string) => {
-    if (t === 'A') return iconA;
-    if (t === 'B') return iconB;
-    return iconC;
+  const iconByType = (t: Enum_Project_Project_Type) => {
+    if (t === Enum_Project_Project_Type.GasEmergency) return GasEmergencyIcon;
+    if (t === Enum_Project_Project_Type.ElectricEmergency) return ElectricEmergencyIcon;
+    return PermitIcon;
   };
 
   /* ---------- Render ---------- */
@@ -279,7 +320,7 @@ export default function MapClient() {
 
       </header> */}
       <div className="px-2">
-        <MapFilters />
+        <MapFilters onFilterChange={setFilters} />
       </div>
 
       <div className="relative flex-1">
@@ -305,16 +346,16 @@ export default function MapClient() {
 
           {map && <LocateButton map={map!} />}
 
-          {DUMMY_MARKERS.map((mk) => (
+          {projectsList.map((mk) => (
             <Marker
-              key={mk.id}
-              position={[mk.lat, mk.lng]}
-              icon={iconByType(mk.type)}
+              key={mk.documentId}
+              position={[Number(mk.lat), Number(mk.lng)]}
+              icon={iconByType(mk.project_type)}
               eventHandlers={{
-                click: () => setSelectedMarker(mk.id),
+                click: () => setSelectedMarker(mk.documentId),
               }}
             >
-              {selectedMarker === mk.id && <CustomPopup data={mk} onClose={() => {}} />}
+              {selectedMarker === mk.documentId && <CustomPopup data={mk} onClose={() => {}} />}
             </Marker>
           ))}
 

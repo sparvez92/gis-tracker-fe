@@ -19,9 +19,10 @@ import { useRouter } from 'next/navigation';
 import { downloadPdf } from '@/lib/fetcher';
 import CommonModal from './CommonModal';
 import { useDeleteProjectMutation } from '@/graphql/mutations/project.generated';
-import { notify } from '@/lib/utils';
-import { ALERT_TYPES } from '@/constants';
+import { notify, toOnlyDate } from '@/lib/utils';
+import { ALERT_TYPES, IProjectFilters } from '@/constants';
 import PrimaryButton from './PrimaryButton';
+import FilterHeader from '@/components/custom/Filters';
 
 export interface Column<T> {
   key: keyof T;
@@ -33,20 +34,95 @@ interface DataTableProps<T> {
   columns: Column<Project>[];
   pageSize?: number;
   showPagination?: boolean;
+  showFilters?: boolean;
 }
 
-export function DataTable<T>({ columns, pageSize = 10, showPagination = true }: DataTableProps<T>) {
+function buildProjectFilters(filters: IProjectFilters) {
+  const andFilters: any[] = [];
+
+  if (filters?.year) {
+    andFilters.push({
+      year: { eqi: filters.year },
+    });
+  }
+
+  if (filters?.startDate) {
+    andFilters.push({
+      const_start_date: {
+        gte: toOnlyDate(filters.startDate),
+      },
+    });
+  }
+
+  if (filters?.endDate) {
+    andFilters.push({
+      const_end_date: {
+        lte: toOnlyDate(filters.endDate),
+      },
+    });
+  }
+
+  if (filters?.restStartDate) {
+    andFilters.push({
+      rest_start_date: {
+        gte: toOnlyDate(filters.restStartDate),
+      },
+    });
+  }
+
+  if (filters?.restEndDate) {
+    andFilters.push({
+      rest_end_date: {
+        lte: toOnlyDate(filters.restEndDate),
+      },
+    });
+  }
+
+  // Search → OR group
+  if (filters?.search) {
+    andFilters.push({
+      or: [
+        { permit_no: { containsi: filters.search } },
+        { layout_no: { containsi: filters.search } },
+        { town: { containsi: filters.search } },
+        { address: { containsi: filters.search } },
+      ],
+    });
+  }
+
+  return { and: andFilters };
+}
+
+export function DataTable<T>({
+  columns,
+  pageSize = 10,
+  showPagination = true,
+  showFilters = false,
+}: DataTableProps<T>) {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [filters, setFilters] = useState<IProjectFilters>({
+    search: '',
+    year: '',
+    startDate: undefined,
+    endDate: undefined,
+    restStartDate: undefined,
+    restEndDate: undefined,
+  });
+
+  const appliedFilters = useMemo(() => {
+    return buildProjectFilters(filters);
+  }, [filters]);
 
   const { data, isLoading } = useProjectsQuery({
     pagination: {
       page,
       pageSize,
     },
+    filters: appliedFilters,
   });
 
   const { mutateAsync } = useDeleteProjectMutation();
@@ -130,6 +206,12 @@ export function DataTable<T>({ columns, pageSize = 10, showPagination = true }: 
   return (
     <div className="relative w-full max-w-full overflow-hidden">
       {/* 👇 Dedicated scroll container */}
+      {showFilters && (
+        <div className="mt-6 w-full">
+          <FilterHeader onFilterChange={setFilters} />
+        </div>
+      )}
+
       <div className="w-full overflow-x-auto rounded-2xl border bg-white p-4 shadow-sm">
         <Table className="w-full min-w-[1200px] border-collapse">
           <TableHeader className="bg-muted/40 sticky top-0 rounded-[12px]">

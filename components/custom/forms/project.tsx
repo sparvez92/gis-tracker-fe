@@ -15,18 +15,12 @@ import {
   useCreateProjectMutation,
   useUpdateProjectMutation,
 } from '@/graphql/mutations/project.generated';
-import { dateFormatter, PROJECTS_ROUTE, projectTypeOptions } from '@/constants';
+import { dateFormatter, PROJECTS_ROUTE, projectTypeOptions, YEARS_OPTIONS } from '@/constants';
 import { Enum_Project_Project_Type, ProjectInput } from '@/types';
 import { useGetSingleProjectQuery } from '@/graphql/queries/project.generated';
 import { Skeleton } from '@/components/ui/skeleton';
 import { notify } from '@/lib/utils';
 
-// Options for dropdowns
-const yearOptions = [
-  { label: '2025', value: '2025' },
-  { label: '2024', value: '2024' },
-  { label: '2023', value: '2023' },
-];
 
 const pcoOptions = [
   { label: 'Yes', value: 'yes' },
@@ -203,7 +197,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
             name="year"
             label="Year"
             placeholder="Select year"
-            options={yearOptions}
+            options={YEARS_OPTIONS}
           />
           <Field form={form} name="townName" label="Town Name" placeholder="Enter Town Name" />
           <SelectField

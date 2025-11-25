@@ -260,3 +260,12 @@ export const COLUMNS: Column<Project>[] = [
     render: (value) => <div className={cn()}>{value ? 'Yes' : 'No'}</div>,
   },
 ];
+
+export type IProjectFilters = {
+  search: string;
+  year: string;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  restStartDate: Date | undefined;
+  restEndDate: Date | undefined;
+};

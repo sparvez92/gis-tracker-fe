@@ -5,15 +5,15 @@ import { Form } from '@/components/ui/form';
 import { useEffect } from 'react';
 import Field from './Field';
 import SelectField from './SelectField';
-import { YEARS_OPTIONS } from '@/constants';
+import { projectTypeOptions, YEARS_OPTIONS } from '@/constants';
+import { Enum_Project_Project_Type } from '@/types';
+import { Button } from '../ui/button';
+import PrimaryButton from './PrimaryButton';
 
 type Filters = {
   search: string;
   year: string;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  restStartDate: Date | undefined;
-  restEndDate: Date | undefined;
+  projectType: Enum_Project_Project_Type | '';
 };
 
 type Props = {
@@ -25,10 +25,7 @@ export default function MapFilters({ onFilterChange = () => {} }: Props) {
     defaultValues: {
       search: '',
       year: '',
-      startDate: undefined,
-      endDate: undefined,
-      restStartDate: undefined,
-      restEndDate: undefined,
+      projectType: '',
     },
   });
 
@@ -46,7 +43,7 @@ export default function MapFilters({ onFilterChange = () => {} }: Props) {
         {/* 🔽 Filters Row */}
         <div className="my-3 grid grid-cols-1 items-center gap-3 md:grid-cols-2 lg:grid-cols-4">
           {/* Status */}
-          <div className="col-span-2">
+          <div className="col-span-4">
             <Field
               form={form}
               label=""
@@ -68,12 +65,20 @@ export default function MapFilters({ onFilterChange = () => {} }: Props) {
 
           <SelectField
             form={form}
-            options={YEARS_OPTIONS}
+            options={projectTypeOptions}
             label=""
-            name="year"
-            placeholder="Select Year"
+            name="projectType"
+            placeholder="Select Project Type"
             className="h-10! w-full flex-1 rounded-sm! border-[#D5D5D5] bg-white"
           />
+          
+          <PrimaryButton label='Clear Filter' type='button' className='h-10 rounded-md' onClick={() => {
+            form.reset({
+              search: '',
+              year: '',
+              projectType: '',
+            })
+          }} />
         </div>
       </form>
     </Form>

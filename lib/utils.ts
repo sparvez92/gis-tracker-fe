@@ -13,3 +13,11 @@ export const notify = (message: string, type: IAlertType = ALERT_TYPES.success) 
     type: type,
   });
 };
+
+export function toOnlyDate(value?: string | Date | null): string | undefined {
+  if (!value) return undefined;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return undefined;
+
+  return d.toISOString().split("T")[0]; // "2025-11-24"
+}
