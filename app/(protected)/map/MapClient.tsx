@@ -8,10 +8,11 @@ import { Printer, MapPin } from 'lucide-react';
 import { ALERT_TYPES, BASEMAPS } from '@/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import MapFilters from '@/components/custom/MapFilters';
-import { notify } from '@/lib/utils';
+import { formatMMDDYYYY, notify } from '@/lib/utils';
 import { useProjectsQuery } from '@/graphql/queries/project.generated';
 import { Enum_Project_Project_Type, Project } from '@/types';
-import { downloadPdf } from '@/lib/fetcher';
+import { downloadPdf, fetchProjectByType } from '@/lib/fetcher';
+import Section from '@/components/custom/Section';
 
 /* ---------- Assets / Icons (replace with your actual icons in public/icons) ---------- */
 const GasEmergencyIcon = L.icon({
@@ -36,7 +37,7 @@ function CustomPopup({ data }: { data: Project; onClose: () => void }) {
       <div className="w-[270px] overflow-hidden rounded-2xl shadow-md">
         {/* Header */}
         <div className="flex items-center justify-between bg-[#1E1B58] px-4 py-5 text-white">
-          <h3 className="text-lg font-semibold">Brooklyy</h3>
+          <h3 className="text-lg font-semibold">{data.town}</h3>
           <div className="flex items-center gap-2">
             <Printer size={26} className="cursor-pointer" onClick={() => downloadPdf(data)} />
           </div>
@@ -63,19 +64,19 @@ function CustomPopup({ data }: { data: Project; onClose: () => void }) {
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Start Date :</span>
-            <span>{data.const_start_date || '-'}</span>
+            <span>{data.const_start_date ? formatMMDDYYYY(data.const_start_date) : '-'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">End Date :</span>
-            <span>{data.const_end_date || '-'}</span>
+            <span>{data.const_end_date ? formatMMDDYYYY(data.const_end_date) : '-'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Restoration Start Date :</span>
-            <span>{data.rest_start_date || '-'}</span>
+            <span>{data.rest_start_date ? formatMMDDYYYY(data.rest_start_date) : '-'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-primary text-sm font-semibold">Restoration End Date :</span>
-            <span>{data.rest_start_date || '-'}</span>
+            <span>{data.rest_end_date ? formatMMDDYYYY(data.rest_end_date) : '-'}</span>
           </div>
         </div>
       </div>
@@ -171,6 +172,11 @@ function LocateButton({ map }: { map: L.Map }) {
 export default function MapClient() {
   const [map, setMap] = useState<L.Map | null>(null); // will be set by MapInitializer
   const [selectedMarker, setSelectedMarker] = useState<string>('');
+  const [projectByType, setProjectByType] = useState({
+    totalPermit: 0,
+    totalGas: 0,
+    totalElectric: 0,
+  });
   const [userCoords, setUserCoords] = useState<L.LatLng | null>(null);
   const { baseMap: basemapKey } = useAuthStore();
 
@@ -212,6 +218,7 @@ export default function MapClient() {
 
   /* ---------- Load Google Maps JS script (Places library) ---------- */
   useEffect(() => {
+    getProjectByType();
     if (typeof window === 'undefined') return;
     if (googleScriptLoaded.current) return;
 
@@ -274,6 +281,17 @@ export default function MapClient() {
     });
   }
 
+  const getProjectByType = () => {
+    fetchProjectByType().then((res) => {
+      console.log('res ==>>', res);
+      setProjectByType({
+        totalPermit: res.totalPermit || 0,
+        totalGas: res.totalGas || 0,
+        totalElectric: res.totalElectric || 0,
+      });
+    });
+  };
+
   /* attempt init autocomplete when input ref becomes ready */
   useEffect(() => {
     if (!searchInputRef.current) return;
@@ -281,30 +299,6 @@ export default function MapClient() {
       initAutocomplete();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInputRef.current, map]);
-
-  /* ---------- Locate Me logic ---------- */
-  const handleLocate = () => {
-    if (!map) {
-      alert('Map not ready yet.');
-      return;
-    }
-    map.locate({ setView: true, maxZoom: 15 });
-    // use events to capture locationfound
-    const onFound = (e: L.LocationEvent) => {
-      setUserCoords(e.latlng);
-      map.off('locationfound', onFound);
-    };
-    map.on('locationfound', onFound);
-
-    const onError = () => {
-      notify(
-        'Could not detect location. Please allow location access in your browser.',
-        ALERT_TYPES.error
-      );
-      map.off('locationerror', onError);
-    };
-    map.on('locationerror', onError);
-  };
 
   /* ---------- small helper to pick marker icon by type ---------- */
   const iconByType = (t: Enum_Project_Project_Type) => {
@@ -319,8 +313,29 @@ export default function MapClient() {
       {/* <header className="z-20 flex items-center gap-4 bg-white p-3 shadow">
 
       </header> */}
-      <div className="px-2">
+      <div className="flex gap-2 px-2 py-1">
         <MapFilters onFilterChange={setFilters} />
+
+        <Section>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-primary text-xs font-semibold">
+                Total Permits
+              </span>
+              <span className="text-primary text-xs font-medium">{projectByType.totalPermit}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-primary text-xs font-semibold">Total Gas Emergencies</span>
+              <span className="text-primary text-xs font-medium">{projectByType.totalGas}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-primary text-xs font-semibold">Total Electric Emergencies</span>
+              <span className="text-primary text-xs font-medium">
+                {projectByType.totalElectric}
+              </span>
+            </div>
+          </div>
+        </Section>
       </div>
 
       <div className="relative flex-1">
@@ -334,7 +349,12 @@ export default function MapClient() {
             className="text-primary placeholder:text-placeholder z-9999 h-8 w-80 rounded border px-2 text-sm"
           />
         </div>
-        <MapContainer center={[30.3753, 69.3451]} zoom={6} className="h-full w-full" maxZoom={19}>
+        <MapContainer
+          center={[40.6971934, -74.3091511]}
+          zoom={6}
+          className="h-full w-full"
+          maxZoom={19}
+        >
           <MapInitializer onReady={(m) => setMap(m)} />
 
           <TileLayer

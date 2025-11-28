@@ -1,7 +1,7 @@
 import { Column } from '@/components/custom/dataTable';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { cn } from '@/lib/utils';
+import { cn, formatMMDDYYYY } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Enum_Project_Project_Status, Enum_Project_Project_Type, Project } from '@/types';
 import { Download, Edit, Trash2 } from 'lucide-react';
@@ -209,28 +209,28 @@ export const COLUMNS: Column<Project>[] = [
     key: 'const_start_date',
     label: 'CSD',
     render: (value) => {
-      return value || '-';
+      return value ? formatMMDDYYYY(value) : '-';
     },
   },
   {
     key: 'const_end_date',
     label: 'CED',
     render: (value) => {
-      return value || '-';
+      return value ? formatMMDDYYYY(value) : '-';
     },
   },
   {
     key: 'rest_start_date',
     label: 'RSD',
     render: (value) => {
-      return value || '-';
+      return value ? formatMMDDYYYY(value) : '-';
     },
   },
   {
     key: 'rest_end_date',
     label: 'RED',
     render: (value) => {
-      return value || '-';
+      return value ? formatMMDDYYYY(value) : '-';
     },
   },
   {

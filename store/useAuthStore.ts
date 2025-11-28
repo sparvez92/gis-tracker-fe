@@ -15,7 +15,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
-  baseMap: 'osm',
+  baseMap: 'light',
   login: (token) => {
     Cookies.set(TOKEN_COOKIE, token, { expires: 30 }); // 7 days
     set({ token });

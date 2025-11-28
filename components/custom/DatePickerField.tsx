@@ -44,7 +44,7 @@ const DatePickerField = <T extends FieldValues>({
                     className
                   )}
                 >
-                  {field.value ? format(field.value, 'dd-MM-yyyy') : <span>{placeholder}</span>}
+                  {field.value ? format(field.value, 'MM/dd/yyyy') : <span>{placeholder}</span>}
                   <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
                 </Button>
               </FormControl>
@@ -54,6 +54,7 @@ const DatePickerField = <T extends FieldValues>({
                 mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
+                  
               />
             </PopoverContent>
           </Popover>

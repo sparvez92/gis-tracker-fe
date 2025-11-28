@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     init();
-  }, [init])
+  }, [])
 
   return (
     <div className="bg-background flex min-h-screen">

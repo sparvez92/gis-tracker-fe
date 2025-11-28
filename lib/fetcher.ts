@@ -1,14 +1,14 @@
 import { useAuthStore } from '@/store/useAuthStore';
 import { notify } from './utils';
-import { ALERT_TYPES } from '@/constants';
+import { ALERT_TYPES, TOKEN_COOKIE } from '@/constants';
 import { Project } from '@/types';
-
+import Cookies from "js-cookie"
 // lib/strapi-fetch.ts
 const STRAPI_ENDPOINT = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 const STRAPI_GRAPHQL_ENDPOINT = `${STRAPI_ENDPOINT}/graphql`;
 
 export async function uploadProjectsCsv(file: File) {
-  const token = useAuthStore.getState().token;
+  const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
 
   const formData = new FormData();
   formData.append('files', file);
@@ -47,7 +47,7 @@ export async function uploadProjectsCsv(file: File) {
 export function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
   return async (options?: { signal?: AbortSignal }): Promise<TData> => {
     try {
-      const token = useAuthStore.getState().token;
+      const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
 
       const res = await fetch(STRAPI_GRAPHQL_ENDPOINT, {
         method: 'POST',
@@ -86,7 +86,7 @@ export function fetcher<TData, TVariables>(query: string, variables?: TVariables
 }
 
 export async function downloadPdf(projectInfo: Project) {
-  const token = useAuthStore.getState().token;
+  const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
 
   const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/generateProjectPDF/${projectInfo?.documentId}`, {
     method: 'GET',
@@ -134,4 +134,61 @@ export async function downloadPdf(projectInfo: Project) {
   URL.revokeObjectURL(url);
 
   return true;
+}
+
+
+export async function fetcherRestApi(endPoint: string, query?: string) {
+  const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
+
+  const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/${endPoint}?${query}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    let errJson;
+    try {
+      errJson = await res.json();
+    } catch {
+      throw new Error('Something went wrong while downloading PDF');
+    }
+
+    const errorMessage = errJson?.error?.message || 'Something went wrong';
+
+    if (errJson?.error?.status === 401) {
+      notify('Session expired. Please log in again.', ALERT_TYPES.error);
+      useAuthStore.getState().logout();
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
+
+      throw new Error(errorMessage);
+    }
+
+    notify(errorMessage, ALERT_TYPES.error);
+    throw new Error(errorMessage);
+  }
+
+  const jsonRes =await res.json()
+
+  return jsonRes
+}
+
+export const fetchAllProjects = () => {
+  return fetcherRestApi('project-by-type')
+}
+
+export const fetchProjectByYear = (year: string) => {
+  return fetcherRestApi(`count-by-date`, `year=${year}`)
+}
+
+export const fetchSummary = () => {
+  return fetcherRestApi(`summary`)
+}
+
+export const fetchProjectByType = () => {
+  return fetcherRestApi(`project-by-type`)
 }

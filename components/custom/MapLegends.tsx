@@ -23,17 +23,23 @@ function MapLegends() {
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-white">Gas Emergency</span>
-            <img src="/icons/marker-blue.svg" className="h-[15px] w-[15px]" />
+            <div className="rounded-xs bg-white p-1">
+              <img src="/icons/marker-blue.svg" className="h-[15px] w-[15px]" />{' '}
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-white">Electric Emergency</span>
-            <img src="/icons/marker-red.svg" className="h-[15px] w-[15px]" />
+            <div className="rounded-xs bg-white p-1">
+              <img src="/icons/marker-red.svg" className="h-[15px] w-[15px]" />
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-white">Permit</span>
-            <img src="/icons/marker-green.svg" className="h-[15px] w-[15px]" />
+            <div className="rounded-xs bg-white p-1">
+              <img src="/icons/marker-green.svg" className="h-[15px] w-[15px]" />
+            </div>
           </div>
         </div>
       </div>
