@@ -1,8 +1,8 @@
 import { useAuthStore } from '@/store/useAuthStore';
 import { notify } from './utils';
-import { ALERT_TYPES, TOKEN_COOKIE } from '@/constants';
+import { ALERT_TYPES, IProjectFilters, TOKEN_COOKIE } from '@/constants';
 import { Project } from '@/types';
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie';
 // lib/strapi-fetch.ts
 const STRAPI_ENDPOINT = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 const STRAPI_GRAPHQL_ENDPOINT = `${STRAPI_ENDPOINT}/graphql`;
@@ -88,12 +88,15 @@ export function fetcher<TData, TVariables>(query: string, variables?: TVariables
 export async function downloadPdf(projectInfo: Project) {
   const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
 
-  const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/generateProjectPDF/${projectInfo?.documentId}`, {
-    method: 'GET',
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+  const res = await fetch(
+    `${STRAPI_ENDPOINT}/api/dashboard/generateProjectPDF/${projectInfo?.documentId}`,
+    {
+      method: 'GET',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }
+  );
 
   if (!res.ok) {
     let errJson;
@@ -136,7 +139,6 @@ export async function downloadPdf(projectInfo: Project) {
   return true;
 }
 
-
 export async function fetcherRestApi(endPoint: string, query?: string) {
   const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
 
@@ -172,23 +174,79 @@ export async function fetcherRestApi(endPoint: string, query?: string) {
     throw new Error(errorMessage);
   }
 
-  const jsonRes =await res.json()
+  const jsonRes = await res.json();
 
-  return jsonRes
+  return jsonRes;
 }
 
 export const fetchAllProjects = () => {
-  return fetcherRestApi('project-by-type')
-}
+  return fetcherRestApi('project-by-type');
+};
 
 export const fetchProjectByYear = (year: string) => {
-  return fetcherRestApi(`count-by-date`, `year=${year}`)
-}
+  return fetcherRestApi(`count-by-date`, `year=${year}`);
+};
 
 export const fetchSummary = () => {
-  return fetcherRestApi(`summary`)
-}
+  return fetcherRestApi(`summary`);
+};
 
 export const fetchProjectByType = () => {
-  return fetcherRestApi(`project-by-type`)
+  return fetcherRestApi(`project-by-type`);
+};
+
+export async function downloadProjectsExcel(filters: IProjectFilters) {
+  const token = useAuthStore.getState().token || Cookies.get(TOKEN_COOKIE);
+
+  const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/download-excel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ filters }),
+  });
+
+  if (!res.ok) {
+    let errJson;
+    try {
+      errJson = await res.json();
+    } catch {
+      throw new Error('Something went wrong while downloading Excel file');
+    }
+
+    const errorMessage = errJson?.error?.message || 'Something went wrong';
+
+    // Token expired
+    if (errJson?.error?.status === 401) {
+      notify('Session expired. Please log in again.', ALERT_TYPES.error);
+      useAuthStore.getState().logout();
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
+
+      throw new Error(errorMessage);
+    }
+
+    notify(errorMessage, ALERT_TYPES.error);
+    throw new Error(errorMessage);
+  }
+
+  // ⚠ Excel = binary blob
+  const blob = await res.blob();
+
+  // Create download link
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+
+  // Name the file — feel free to adjust
+  a.download = `Projects_${new Date().toISOString()}.xlsx`;
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  return true;
 }

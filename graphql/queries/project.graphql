@@ -1,5 +1,5 @@
-query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg) {
-  projects_connection(filters: $filters, pagination: $pagination) {
+query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg, $sort: [String]) {
+  projects_connection(filters: $filters, pagination: $pagination, sort: $sort) {
     nodes {
       documentId
       permit_no
@@ -19,6 +19,7 @@ query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg) {
       createdAt
       updatedAt
       publishedAt
+      comments
     }
     pageInfo {
       total
@@ -49,5 +50,6 @@ query GetSingleProject($documentId: ID!) {
     updatedAt
     publishedAt
     permit_close_out
+    comments
   }
 }

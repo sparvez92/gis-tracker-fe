@@ -254,6 +254,13 @@ export const COLUMNS: Column<Project>[] = [
       );
     },
   },
+  { key: 'comments', label: 'Comments',  render: (value) => {
+    return (
+      <span className='max-w-[100px] text-wrap'>
+        {value || "-"}
+      </span>
+    );
+  }, },
   {
     key: 'permit_close_out',
     label: 'PCO',

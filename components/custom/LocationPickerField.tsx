@@ -84,7 +84,24 @@ const LocationPickerField = <T extends FieldValues>({
       const lng = event.latLng.lng();
       setPosition({ lat, lng });
       form.setValue(name, { lat, lng, address: '' } as any);
+      fetchLocationAndSetAddress(lat, lng);
     }
+  };
+
+  const fetchLocationAndSetAddress = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+      );
+      const res = await response.json();
+      if(res?.results?.[0]?.formatted_address) {
+        const address = res.results[0].formatted_address;
+        form.setValue(name, { lat, lng, address } as any);
+        if (inputRef.current) {
+          inputRef.current.value = address;
+        }
+      }
+    } catch (error) {}
   };
 
   if (!isLoaded) return <p>Loading map...</p>;

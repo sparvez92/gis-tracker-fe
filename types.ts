@@ -420,6 +420,7 @@ export type PaginationArg = {
 export type Project = {
   __typename?: 'Project';
   address?: Maybe<Scalars['String']['output']>;
+  comments?: Maybe<Scalars['String']['output']>;
   const_end_date?: Maybe<Scalars['Date']['output']>;
   const_start_date?: Maybe<Scalars['Date']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -448,6 +449,7 @@ export type ProjectEntityResponseCollection = {
 export type ProjectFiltersInput = {
   address?: InputMaybe<StringFilterInput>;
   and?: InputMaybe<Array<InputMaybe<ProjectFiltersInput>>>;
+  comments?: InputMaybe<StringFilterInput>;
   const_end_date?: InputMaybe<DateFilterInput>;
   const_start_date?: InputMaybe<DateFilterInput>;
   createdAt?: InputMaybe<DateTimeFilterInput>;
@@ -471,6 +473,7 @@ export type ProjectFiltersInput = {
 
 export type ProjectInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  comments?: InputMaybe<Scalars['String']['input']>;
   const_end_date?: InputMaybe<Scalars['Date']['input']>;
   const_start_date?: InputMaybe<Scalars['Date']['input']>;
   lat?: InputMaybe<Scalars['String']['input']>;

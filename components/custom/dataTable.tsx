@@ -123,6 +123,7 @@ export function DataTable<T>({
       pageSize,
     },
     filters: appliedFilters,
+    sort: ["createdAt:desc"]
   });
 
   const { mutateAsync } = useDeleteProjectMutation();
@@ -208,7 +209,7 @@ export function DataTable<T>({
       {/* 👇 Dedicated scroll container */}
       {showFilters && (
         <div className="mt-6 w-full">
-          <FilterHeader onFilterChange={setFilters} />
+          <FilterHeader filters={filters} onFilterChange={setFilters} />
         </div>
       )}
 

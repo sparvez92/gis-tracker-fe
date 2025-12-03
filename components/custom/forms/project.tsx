@@ -20,7 +20,8 @@ import { Enum_Project_Project_Type, ProjectInput } from '@/types';
 import { useGetSingleProjectQuery } from '@/graphql/queries/project.generated';
 import { Skeleton } from '@/components/ui/skeleton';
 import { notify } from '@/lib/utils';
-
+import TextareaField from '../TextAreaField';
+import { useQueryClient } from '@tanstack/react-query';
 
 const pcoOptions = [
   { label: 'Yes', value: 'yes' },
@@ -43,6 +44,7 @@ const formSchema = z.object({
     lng: z.number(),
     address: z.string().optional(),
   }),
+  comments: z.string().optional(),
 });
 
 const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
@@ -53,6 +55,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
       layoutNo: '',
       townName: '',
       permitCloseOut: 'no',
+      comments: '',
       location: {
         lat: undefined,
         lng: undefined,
@@ -63,6 +66,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
 
   // hooks
   const router = useRouter();
+  const queryClient = useQueryClient();
   const params = useParams<{ id: string }>();
   // state
   const [isLoading, setIsLoading] = useState(false);
@@ -108,6 +112,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
               address: data.project.address || '',
             },
             permitCloseOut: data.project.permit_close_out ? 'yes' : 'no',
+            comments: data.project?.comments || '',
           });
       }, 500);
     }
@@ -135,7 +140,10 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
       lng: values.location.lng?.toString() || null,
       address: values.location.address || null,
       permit_close_out: values.permitCloseOut === 'yes' ? true : false,
+      comments: values.comments || '',
     };
+
+    queryClient.invalidateQueries({ queryKey: ['Projects'] });
 
     if (isUpdate) {
       updateProject(payload);
@@ -167,7 +175,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
       documentId: params?.id || '',
     })
       .then(() => {
-        notify("Project updated successfully");
+        notify('Project updated successfully');
         router.push(PROJECTS_ROUTE);
         form.reset();
       })
@@ -227,6 +235,14 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
           lat={data?.project?.lat ?? ''}
           lng={data?.project?.lng ?? ''}
           address={data?.project?.address ?? ''}
+        />
+
+        <TextareaField
+          form={form}
+          name="comments"
+          label="Comments"
+          placeholder="Enter any additional comments here"
+          containerClassName="w-full"
         />
 
         <PrimaryButton

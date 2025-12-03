@@ -10,12 +10,15 @@ import SelectField from './SelectField';
 import DatePickerField from './DatePickerField';
 import { IProjectFilters, UPLOAD_CSV, YEARS_OPTIONS } from '@/constants';
 import { useRouter } from 'next/navigation';
+import { downloadProjectsExcel } from '@/lib/fetcher';
+import { notify } from '@/lib/utils';
 
 type Props = {
   onFilterChange?: (filters: IProjectFilters) => void;
+  filters: IProjectFilters;
 };
 
-export default function SearchFilterHeader({ onFilterChange = () => {} }: Props) {
+export default function SearchFilterHeader({ filters, onFilterChange = () => {} }: Props) {
   const router = useRouter();
   const form = useForm<IProjectFilters>({
     defaultValues: {
@@ -47,6 +50,12 @@ export default function SearchFilterHeader({ onFilterChange = () => {} }: Props)
     });
   };
 
+  const downloadExcel = () => {
+    downloadProjectsExcel(filters).catch((err) => {
+      notify(err.message || 'Failed to download CSV', 'error');
+    })
+  }
+
   return (
     <Form {...form}>
       <form className="w-full rounded-md">
@@ -66,6 +75,14 @@ export default function SearchFilterHeader({ onFilterChange = () => {} }: Props)
             className="bg-secondary hover:bg-secondary cursor-pointer text-sm font-bold hover:opacity-85"
           >
             Upload CSV
+          </Button>
+
+          <Button
+            onClick={downloadExcel}
+            type="button"
+            className="bg-secondary hover:bg-secondary cursor-pointer text-sm font-bold hover:opacity-85"
+          >
+            Download CSV
           </Button>
         </div>
 

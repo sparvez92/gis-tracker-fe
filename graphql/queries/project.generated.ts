@@ -5,6 +5,10 @@ import { fetcher } from '../../lib/fetcher';
 export type ProjectsQueryVariables = Types.Exact<{
   filters?: Types.InputMaybe<Types.ProjectFiltersInput>;
   pagination?: Types.InputMaybe<Types.PaginationArg>;
+  sort?: Types.InputMaybe<
+    | Array<Types.InputMaybe<Types.Scalars['String']['input']>>
+    | Types.InputMaybe<Types.Scalars['String']['input']>
+  >;
 }>;
 
 export type ProjectsQuery = {
@@ -31,6 +35,7 @@ export type ProjectsQuery = {
       createdAt?: any | null;
       updatedAt?: any | null;
       publishedAt?: any | null;
+      comments?: string | null;
     }>;
     pageInfo: {
       __typename?: 'Pagination';
@@ -68,12 +73,13 @@ export type GetSingleProjectQuery = {
     updatedAt?: any | null;
     publishedAt?: any | null;
     permit_close_out?: boolean | null;
+    comments?: string | null;
   } | null;
 };
 
 export const ProjectsDocument = `
-    query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg) {
-  projects_connection(filters: $filters, pagination: $pagination) {
+    query Projects($filters: ProjectFiltersInput, $pagination: PaginationArg, $sort: [String]) {
+  projects_connection(filters: $filters, pagination: $pagination, sort: $sort) {
     nodes {
       documentId
       permit_no
@@ -93,6 +99,7 @@ export const ProjectsDocument = `
       createdAt
       updatedAt
       publishedAt
+      comments
     }
     pageInfo {
       total
@@ -138,6 +145,7 @@ export const GetSingleProjectDocument = `
     updatedAt
     publishedAt
     permit_close_out
+    comments
   }
 }
     `;
