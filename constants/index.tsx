@@ -1,12 +1,9 @@
 import { Column } from '@/components/custom/dataTable';
-import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
 import { cn, formatMMDDYYYY } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Enum_Project_Project_Status, Enum_Project_Project_Type, Project } from '@/types';
-import { Download, Edit, Trash2 } from 'lucide-react';
 
-export const TOKEN_COOKIE = 'GIS_APP_TOKEN';
+export const TOKEN_COOKIE = 'jwtToken';
 
 export const DASHBOARD_ROUTE = '/';
 export const ADD_PROJECT = '/projects/add';
