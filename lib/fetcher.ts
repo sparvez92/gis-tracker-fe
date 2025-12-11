@@ -16,7 +16,7 @@ export async function uploadProjectsCsv(file: File) {
   const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/upload-csv`, {
     method: 'POST',
     headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`
     },
     body: formData,
   });
@@ -93,7 +93,7 @@ export async function downloadPdf(projectInfo: Project) {
     {
       method: 'GET',
       headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        Authorization: `Bearer ${token}`
       },
     }
   );
@@ -145,7 +145,7 @@ export async function fetcherRestApi(endPoint: string, query?: string) {
   const res = await fetch(`${STRAPI_ENDPOINT}/api/dashboard/${endPoint}?${query}`, {
     method: 'GET',
     headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`
     },
   });
 
@@ -202,7 +202,7 @@ export async function downloadProjectsExcel(filters: IProjectFilters) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ filters }),
   });
