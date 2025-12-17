@@ -2,7 +2,7 @@
 import Field from '@/components/custom/Field';
 import PrimaryButton from '@/components/custom/PrimaryButton';
 import { Form } from '@/components/ui/form';
-import { DASHBOARD_ROUTE, MAP_ROUTE } from '@/constants';
+import { MAP_ROUTE } from '@/constants';
 import { useLoginMutation } from '@/graphql/mutations/user.generated';
 import { useAuthStore } from '@/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,7 +44,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (token) {
-      router.push(DASHBOARD_ROUTE);
+      router.push(MAP_ROUTE);
     }
   }, [token]);
 

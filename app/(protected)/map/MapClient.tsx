@@ -219,46 +219,17 @@ export default function MapClient() {
   /* ---------- Load Google Maps JS script (Places library) ---------- */
   useEffect(() => {
     getProjectByType();
-    if (typeof window === 'undefined') return;
-    if (googleScriptLoaded.current) return;
-
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!key) {
-      console.warn('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY not set; Autocomplete will not work.');
-      return;
-    }
-
-    const id = 'google-maps-places-script';
-    if (document.getElementById(id)) {
-      googleScriptLoaded.current = true;
-      return;
-    }
-
-    const s = document.createElement('script');
-    s.id = id;
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
-    s.async = true;
-    s.defer = true;
-    s.onload = () => {
-      googleScriptLoaded.current = true;
-      // initialize autocomplete if input already exists
-      initAutocomplete();
-    };
-    document.head.appendChild(s);
-
-    return () => {
-      /* do not remove script on unmount */
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function initAutocomplete() {
+    console.log({ searchInputRef });
     if (!searchInputRef.current) return;
     // guard for google
     // @ts-ignore
     if (typeof window === 'undefined' || !(window as any).google || !(window as any).google.maps)
       return;
 
+    console.log('initAutocomplete called ===>>>');
     // @ts-ignore
     const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
       fields: ['geometry', 'name', 'formatted_address'],
@@ -267,7 +238,6 @@ export default function MapClient() {
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      console.log('place ==>>', place);
       if (place?.geometry?.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
@@ -283,7 +253,6 @@ export default function MapClient() {
 
   const getProjectByType = () => {
     fetchProjectByType().then((res) => {
-      console.log('res ==>>', res);
       setProjectByType({
         totalPermit: res.totalPermit || 0,
         totalGas: res.totalGas || 0,
@@ -295,8 +264,31 @@ export default function MapClient() {
   /* attempt init autocomplete when input ref becomes ready */
   useEffect(() => {
     if (!searchInputRef.current) return;
-    if (typeof window != undefined && (window as any).google && (window as any).google.maps)
-      initAutocomplete();
+    if (typeof window != undefined && map) {
+      const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (!key) {
+        console.warn('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY not set; Autocomplete will not work.');
+        return;
+      }
+
+      const id = 'google-maps-places-script';
+      if (document.getElementById(id)) {
+        googleScriptLoaded.current = true;
+        return;
+      }
+
+      const s = document.createElement('script');
+      s.id = id;
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
+      s.async = true;
+      s.defer = true;
+      s.onload = () => {
+        googleScriptLoaded.current = true;
+        // initialize autocomplete if input already exists
+        initAutocomplete();
+      };
+      document.head.appendChild(s);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInputRef.current, map]);
 
@@ -316,12 +308,10 @@ export default function MapClient() {
       <div className="flex gap-2 px-2 py-1">
         <MapFilters onFilterChange={setFilters} />
 
-        <Section>
+        {/* <Section>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-primary text-xs font-semibold">
-                Total Permits
-              </span>
+              <span className="text-primary text-xs font-semibold">Total Permits</span>
               <span className="text-primary text-xs font-medium">{projectByType.totalPermit}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -335,7 +325,7 @@ export default function MapClient() {
               </span>
             </div>
           </div>
-        </Section>
+        </Section> */}
       </div>
 
       <div className="relative flex-1">
@@ -349,6 +339,25 @@ export default function MapClient() {
             className="text-primary placeholder:text-placeholder z-9999 h-8 w-80 rounded border px-2 text-sm"
           />
         </div>
+
+        <Section className='absolute bottom-10 z-20 right-5'>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-primary text-xs font-semibold">Total Permits</span>
+              <span className="text-primary text-xs font-medium">{projectByType.totalPermit}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-primary text-xs font-semibold">Total Gas Emergencies</span>
+              <span className="text-primary text-xs font-medium">{projectByType.totalGas}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-primary text-xs font-semibold">Total Electric Emergencies</span>
+              <span className="text-primary text-xs font-medium">
+                {projectByType.totalElectric}
+              </span>
+            </div>
+          </div>
+        </Section>
         <MapContainer
           center={[40.6971934, -74.3091511]}
           zoom={6}
@@ -360,7 +369,6 @@ export default function MapClient() {
           <TileLayer
             url={BASEMAPS[basemapKey].url}
             subdomains={BASEMAPS[basemapKey].subdomains}
-            attribution="&copy; OpenStreetMap contributors"
             maxZoom={19}
           />
 

@@ -23,6 +23,7 @@ import { notify, toOnlyDate } from '@/lib/utils';
 import { ALERT_TYPES, IProjectFilters } from '@/constants';
 import PrimaryButton from './PrimaryButton';
 import FilterHeader from '@/components/custom/Filters';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface Column<T> {
   key: keyof T;
@@ -86,6 +87,7 @@ function buildProjectFilters(filters: IProjectFilters) {
         { layout_no: { containsi: filters.search } },
         { town: { containsi: filters.search } },
         { address: { containsi: filters.search } },
+        { comments: { containsi: filters.search } },
       ],
     });
   }
@@ -117,7 +119,7 @@ export function DataTable<T>({
     return buildProjectFilters(filters);
   }, [filters]);
 
-  const { data, isLoading } = useProjectsQuery({
+  const { data, isLoading, refetch } = useProjectsQuery({
     pagination: {
       page,
       pageSize,
@@ -125,6 +127,8 @@ export function DataTable<T>({
     filters: appliedFilters,
     sort: ["createdAt:desc"]
   });
+
+  const queryClient = useQueryClient()
 
   const { mutateAsync } = useDeleteProjectMutation();
 
@@ -162,6 +166,10 @@ export function DataTable<T>({
         setShowDeleteModal(false);
         setSelectedProject(null);
         notify('Project deleted successfully');
+        if(paginatedData.length === 1 && page > 1){
+          setPage(page - 1);
+        }
+        queryClient.invalidateQueries({ queryKey: ['Projects'] });
       })
       .catch((error) => {
         notify(error.message, ALERT_TYPES.error);

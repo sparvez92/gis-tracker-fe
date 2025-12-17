@@ -1,4 +1,5 @@
 import { Column } from '@/components/custom/dataTable';
+
 import { cn, formatMMDDYYYY } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Enum_Project_Project_Status, Enum_Project_Project_Type, Project } from '@/types';
@@ -87,34 +88,6 @@ export type Permit = {
   isPermitClosed?: boolean;
   status: 'Completed' | 'In Progress';
 };
-
-export const DUMMY_DATA: Permit[] = [
-  {
-    permit: '0092',
-    layout: '9877',
-    year: 2023,
-    town: 'Brooklyn',
-    startDate: '2024-03-15',
-    endDate: '2024-03-15',
-    restStart: '2024-03-15',
-    restEnd: '2024-03-15',
-    status: 'Completed',
-    isPermitClosed: false,
-  },
-  {
-    permit: '0093',
-    layout: '9878',
-    year: 2023,
-    town: 'Brooklyn',
-    startDate: '2024-03-15',
-    endDate: '2024-03-15',
-    restStart: '2024-03-15',
-    restEnd: '2024-03-15',
-    status: 'In Progress',
-    isPermitClosed: true,
-  },
-  // add more rows as needed
-];
 
 export const BASEMAPS: Record<
   string,

@@ -5,7 +5,7 @@ import { DataTable } from '@/components/custom/dataTable';
 import Section from '@/components/custom/Section';
 import Title from '@/components/custom/Title';
 import { Skeleton } from '@/components/ui/skeleton';
-import { COLUMNS, DUMMY_DATA } from '@/constants';
+import { COLUMNS } from '@/constants';
 import { fetchSummary } from '@/lib/fetcher';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
