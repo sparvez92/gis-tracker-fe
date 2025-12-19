@@ -4,7 +4,7 @@ import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,8 +14,9 @@ type Props<T extends FieldValues> = {
   label: string;
   name: Path<T>;
   placeholder?: string;
-  className?: string
-  parentClassName?: string
+  className?: string;
+  parentClassName?: string;
+  showClearDate?: boolean;
 };
 
 const DatePickerField = <T extends FieldValues>({
@@ -23,15 +24,16 @@ const DatePickerField = <T extends FieldValues>({
   label,
   name,
   placeholder = 'Select date',
-  className = "",
-  parentClassName = ""
+  className = '',
+  parentClassName = '',
+  showClearDate = false,
 }: Props<T>) => {
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem className={`flex flex-col gap-0 ${parentClassName}`}>
+        <FormItem className={`relative flex flex-col gap-0 ${parentClassName}`}>
           <FormLabel className="text-primary text-sm font-medium">{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
@@ -45,19 +47,26 @@ const DatePickerField = <T extends FieldValues>({
                   )}
                 >
                   {field.value ? format(field.value, 'MM/dd/yyyy') : <span>{placeholder}</span>}
-                  <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
+                  <div className="relative ml-auto flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5 opacity-50" />
+                  </div>
                 </Button>
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
-                  
-              />
+              <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
             </PopoverContent>
           </Popover>
+          {showClearDate && field.value && (
+            <div
+              className="absolute top-10 right-10 z-1 rounded-full bg-black p-0.5"
+              onClick={() => {
+                form.reset({ ...form.getValues(), [name]: undefined });
+              }}
+            >
+              <X color="#fff" className="ml-auto h-3 w-3" />
+            </div>
+          )}
           <FormMessage className="text-sm text-red-500" />
         </FormItem>
       )}

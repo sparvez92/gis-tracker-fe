@@ -114,7 +114,7 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
             permitCloseOut: data.project.permit_close_out ? 'yes' : 'no',
             comments: data.project?.comments || '',
           });
-      }, 500);
+      }, 1000);
     }
   }, [isUpdate, params?.id, data, projectInfoLoading, form]);
 
@@ -222,10 +222,25 @@ const ProjectForm = ({ isUpdate = false }: { isUpdate?: boolean }) => {
             placeholder="Permit Closed Out"
             options={pcoOptions}
           />
-          <DatePickerField form={form} name="startDate" label="Construction Start Date" />
-          <DatePickerField form={form} name="endDate" label="Construction End Date" />
-          <DatePickerField form={form} name="restorationStartDate" label="Restoration Start Date" />
-          <DatePickerField form={form} name="restorationEndDate" label="Restoration End Date" />
+          <DatePickerField
+            form={form}
+            name="startDate"
+            label="Construction Start Date"
+            showClearDate
+          />
+          <DatePickerField form={form} name="endDate" label="Construction End Date" showClearDate />
+          <DatePickerField
+            form={form}
+            name="restorationStartDate"
+            label="Restoration Start Date"
+            showClearDate
+          />
+          <DatePickerField
+            form={form}
+            name="restorationEndDate"
+            label="Restoration End Date"
+            showClearDate
+          />
         </div>
 
         <LocationPickerField

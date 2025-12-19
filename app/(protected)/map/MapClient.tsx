@@ -87,18 +87,13 @@ function CustomPopup({ data }: { data: Project; onClose: () => void }) {
 /* ---------- MapInitializer: obtains map instance via useMap and passes it up ---------- */
 function MapInitializer({ onReady }: { onReady: (map: L.Map) => void }) {
   const map = useMap();
+
   useEffect(() => {
     onReady(map);
-    // attach a couple of default handlers so locate/controls behave well
-    const onLocate = (e: L.LocationEvent) => {
-      // nothing here, user logic handled where map instance is held
-    };
-    map.on('locationfound', onLocate);
-    return () => {
-      map.off('locationfound', onLocate);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setTimeout(() => map.invalidateSize(), 100);
   }, [map]);
+
   return null;
 }
 
@@ -288,6 +283,11 @@ export default function MapClient() {
         initAutocomplete();
       };
       document.head.appendChild(s);
+
+
+      setTimeout(() => {
+        map?.invalidateSize?.();
+      }, 500)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInputRef.current, map]);
@@ -335,7 +335,7 @@ export default function MapClient() {
               searchInputRef.current = el;
             }}
             type="search"
-            placeholder="Search (Google Autocomplete)…"
+            placeholder="Search Location"
             className="text-primary placeholder:text-placeholder z-9999 h-8 w-80 rounded border px-2 text-sm"
           />
         </div>
@@ -369,7 +369,11 @@ export default function MapClient() {
           <TileLayer
             url={BASEMAPS[basemapKey].url}
             subdomains={BASEMAPS[basemapKey].subdomains}
-            maxZoom={19}
+            maxZoom={22}
+            maxNativeZoom={19}
+            updateWhenZooming={false}
+            updateWhenIdle={true}
+            keepBuffer={2}
           />
 
           {map && <LocateButton map={map!} />}
